@@ -1,0 +1,2737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>For Tamanna</title>
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/SplitText.min.js"></script>
+
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --blush:      #f2c4ce;
+      --rose:       #e8a0b0;
+      --petal:      #fce8ed;
+      --warm-white: #fdf6f0;
+      --charcoal:   #2c2c2c;
+      --charcoal-2: #3d3535;
+      --muted:      #9a7f84;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--warm-white);
+      color: var(--charcoal);
+      font-family: 'Georgia', 'Times New Roman', serif;
+      overflow-x: hidden;
+    }
+
+    /* ═══ SECTION 1 — HERO ═══════════════════════════════════ */
+    #hero {
+      position: relative; width: 100%; height: 100svh; min-height: 500px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      overflow: hidden; background: var(--warm-white);
+    }
+    #hero-bg {
+      position: absolute; inset: 0; opacity: 0;
+      background:
+        radial-gradient(ellipse 80% 70% at 50% 40%, #fde9ef 0%, transparent 70%),
+        radial-gradient(ellipse 60% 50% at 20% 80%, #fce4ec 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 80% 10%, #fce8ed 0%, transparent 60%);
+    }
+    #particle-canvas { position: absolute; inset: 0; pointer-events: none; }
+    .hero-rule { width: 0; height: 1px; background: var(--rose); margin-bottom: 18px; opacity: 0; }
+    .hero-pre {
+      font-family: 'Georgia', serif; font-size: clamp(0.75rem,2.2vw,0.95rem);
+      letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted);
+      opacity: 0; transform: translateY(10px); position: relative; z-index: 2;
+    }
+    .hero-name-wrap { position: relative; z-index: 2; margin-top: clamp(20px,4vw,32px); overflow: visible; }
+    .hero-name {
+      font-family: 'Georgia', serif; font-size: clamp(3.6rem,13vw,9rem); font-weight: 400;
+      letter-spacing: 0.04em; color: var(--charcoal-2); line-height: 1; opacity: 0;
+    }
+    .hero-name .char { display: inline-block; will-change: transform, opacity; }
+    .hero-heart {
+      display: block; text-align: center; font-size: clamp(1.6rem,5vw,2.6rem);
+      margin-top: clamp(10px,2vw,18px); opacity: 0; transform: scale(0.6); position: relative; z-index: 2;
+    }
+    .scroll-hint {
+      position: absolute; bottom: clamp(24px,5vh,48px); left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 8px; opacity: 0; z-index: 2;
+    }
+    .scroll-hint span {
+      font-family: 'Georgia', serif; font-size: clamp(0.6rem,1.8vw,0.72rem);
+      letter-spacing: 0.25em; text-transform: uppercase; color: var(--muted);
+    }
+    .scroll-arrow {
+      width: 1px; height: 32px;
+      background: linear-gradient(to bottom, var(--rose), transparent);
+      border-radius: 1px; transform-origin: top;
+    }
+    @media (max-width: 480px) { .hero-name { letter-spacing: 0.02em; } }
+
+    /* ═══ SECTION 2 — SCROLL REVEAL ══════════════════════════ */
+    #reveal-outer { position: relative; }
+    #reveal-stage {
+      position: sticky; top: 0; left: 0;
+      width: 100%; height: 100svh; min-height: 500px;
+      overflow: hidden; display: flex; align-items: center; justify-content: center;
+      background: var(--warm-white);
+    }
+    #reveal-bg {
+      position: absolute; inset: 0; pointer-events: none; opacity: 0;
+      background:
+        radial-gradient(ellipse 90% 75% at 50% 45%, #fde8ef 0%, transparent 65%),
+        radial-gradient(ellipse 55% 50% at 12% 88%, #fce4ec 0%, transparent 55%),
+        radial-gradient(ellipse 45% 40% at 88% 8%,  #fce8ed 0%, transparent 55%);
+    }
+    #reveal-canvas { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+    .r-orb {
+      position: absolute; border-radius: 50%;
+      pointer-events: none; will-change: transform, opacity; opacity: 0; z-index: 2;
+    }
+    #orb-a {
+      width: clamp(120px,28vw,280px); height: clamp(120px,28vw,280px); top: 6%; left: -4%;
+      background: radial-gradient(circle, rgba(242,196,206,0.28) 0%, transparent 68%);
+    }
+    #orb-b {
+      width: clamp(90px,20vw,200px); height: clamp(90px,20vw,200px); bottom: 8%; right: -2%;
+      background: radial-gradient(circle, rgba(232,160,176,0.20) 0%, transparent 68%);
+    }
+    #orb-c {
+      width: clamp(60px,12vw,110px); height: clamp(60px,12vw,110px); top: 48%; left: 76%;
+      background: radial-gradient(circle, rgba(252,232,237,0.36) 0%, transparent 68%);
+    }
+    #orb-d {
+      width: clamp(50px,10vw,90px); height: clamp(50px,10vw,90px); top: 22%; right: 15%;
+      background: radial-gradient(circle, rgba(242,196,206,0.22) 0%, transparent 68%);
+    }
+    .r-scene {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: clamp(28px,7vw,90px); text-align: center; pointer-events: none; z-index: 5;
+    }
+    #s1-wait {
+      font-family: 'Georgia', serif; font-size: clamp(2.8rem,10vw,7rem); font-weight: 400;
+      letter-spacing: 0.05em; color: var(--charcoal-2); opacity: 0; will-change: transform, opacity;
+    }
+    #s2-question {
+      font-family: 'Georgia', serif; font-size: clamp(1.1rem,3.4vw,1.9rem); font-weight: 400;
+      color: var(--charcoal); letter-spacing: 0.025em; line-height: 1.65;
+      max-width: min(600px,88vw); opacity: 0; will-change: transform, opacity;
+    }
+    .s3-glow-ring {
+      position: absolute; border-radius: 50%; pointer-events: none;
+      opacity: 0; will-change: transform, opacity; z-index: 4;
+      width: clamp(260px,56vw,520px); height: clamp(260px,56vw,520px);
+      background: radial-gradient(circle, rgba(242,196,206,0.38) 0%, transparent 65%);
+    }
+    #s3-you {
+      font-family: 'Georgia', serif; font-size: clamp(2.4rem,9vw,6.6rem); font-weight: 400;
+      letter-spacing: 0.055em; line-height: 1.08; color: var(--charcoal-2);
+      opacity: 0; will-change: transform, opacity; position: relative; z-index: 6;
+    }
+    #s3-you .r-accent { color: var(--rose); font-style: italic; }
+    #s4-because {
+      font-family: 'Georgia', serif; font-style: italic; font-size: clamp(1.1rem,3.2vw,1.8rem);
+      color: var(--muted); letter-spacing: 0.04em; opacity: 0; will-change: transform, opacity;
+    }
+    #s4-rule {
+      display: block; height: 1px; width: 0; margin: 18px auto 0; opacity: 0;
+      background: linear-gradient(to right, transparent, var(--rose) 40%, transparent);
+    }
+    @media (max-width: 480px) {
+      #s3-you  { letter-spacing: 0.025em; }
+      #s1-wait { letter-spacing: 0.03em; }
+    }
+
+    /* ═══ SECTION 3 — COUNTDOWN ══════════════════════════════ */
+    #countdown-section {
+      position: relative; width: 100%;
+      padding: clamp(80px,14vh,130px) clamp(24px,6vw,80px);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      overflow: hidden; background: var(--warm-white);
+    }
+    #cd-bg {
+      position: absolute; inset: 0; pointer-events: none; opacity: 0;
+      background:
+        radial-gradient(ellipse 70% 60% at 50% 50%, #fde8ef 0%, transparent 65%),
+        radial-gradient(ellipse 40% 35% at 5%  80%, #fce4ec 0%, transparent 55%),
+        radial-gradient(ellipse 35% 30% at 95%  5%, #fce8ed 0%, transparent 55%);
+    }
+    #cd-heading {
+      font-family: 'Georgia', serif; font-size: clamp(0.8rem,2.4vw,1.05rem);
+      letter-spacing: 0.28em; text-transform: uppercase; color: var(--muted);
+      text-align: center; position: relative; z-index: 2; opacity: 0; transform: translateY(18px);
+    }
+    #cd-rule {
+      width: 0; height: 1px; margin: 18px auto 0; opacity: 0; position: relative; z-index: 2;
+      background: linear-gradient(to right, transparent, var(--rose) 40%, transparent);
+    }
+    #cd-grid {
+      display: flex; flex-wrap: wrap; gap: clamp(16px,3.5vw,40px);
+      justify-content: center; align-items: flex-start;
+      margin-top: clamp(40px,7vh,64px); position: relative; z-index: 2;
+    }
+    .cd-unit {
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      opacity: 0; transform: translateY(22px); min-width: clamp(72px,16vw,110px);
+    }
+    .cd-num-wrap {
+      position: relative; overflow: hidden; width: 100%; height: clamp(56px,13vw,96px);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .cd-num {
+      font-family: 'Georgia', serif; font-size: clamp(2.6rem,8vw,5.2rem); font-weight: 400;
+      color: var(--charcoal-2); line-height: 1; letter-spacing: 0.03em;
+      will-change: transform, opacity; display: block;
+    }
+    .cd-bar {
+      width: 100%; height: 1px; opacity: 0.55;
+      background: linear-gradient(to right, transparent, var(--rose) 40%, transparent);
+    }
+    .cd-label {
+      font-family: 'Georgia', serif; font-size: clamp(0.6rem,1.6vw,0.72rem);
+      letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted);
+    }
+    .cd-sep {
+      font-family: 'Georgia', serif; font-size: clamp(1.8rem,5vw,3rem);
+      color: var(--blush); line-height: 1; align-self: flex-start;
+      margin-top: clamp(8px,2vw,16px); opacity: 0; user-select: none;
+    }
+    #cd-placeholder {
+      display: none; flex-direction: column; align-items: center; gap: 12px;
+      margin-top: clamp(36px,6vh,56px); position: relative; z-index: 2;
+      opacity: 0; transform: translateY(18px);
+    }
+    #cd-placeholder p {
+      font-family: 'Georgia', serif; font-style: italic; font-size: clamp(1rem,2.8vw,1.4rem);
+      color: var(--muted); text-align: center; letter-spacing: 0.03em; line-height: 1.7;
+    }
+    #cd-placeholder small {
+      font-family: 'Georgia', serif; font-size: clamp(0.62rem,1.6vw,0.72rem);
+      letter-spacing: 0.22em; text-transform: uppercase; color: var(--blush);
+    }
+    #cd-arrived {
+      display: none; flex-direction: column; align-items: center; gap: 14px;
+      margin-top: clamp(36px,6vh,56px); position: relative; z-index: 2; opacity: 0;
+    }
+    #cd-arrived p {
+      font-family: 'Georgia', serif; font-size: clamp(1.3rem,4vw,2rem);
+      color: var(--charcoal-2); text-align: center; letter-spacing: 0.04em; line-height: 1.5;
+    }
+    #cd-arrived .arrived-emoji { font-size: clamp(2rem,6vw,3rem); }
+
+    /* ═══ SECTION 4 — BIRTHDAY REVEAL ═══════════════════════
+       Architecture:
+         #bday-outer   tall scroll-space (5.2 × 100vh, set by JS)
+         #bday-stage   sticky viewport, pinned top:0
+         Inside stage: layered scenes + canvas for sparkles/petals
+    ══════════════════════════════════════════════════════════ */
+
+    #bday-outer { position: relative; }
+
+    #bday-stage {
+      position: sticky; top: 0; left: 0;
+      width: 100%; height: 100svh; min-height: 500px;
+      overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* — Layered backgrounds — each fades in on its own phase — */
+    .bday-bg-layer {
+      position: absolute; inset: 0; pointer-events: none; opacity: 0;
+      will-change: opacity;
+    }
+    #bday-bg-1 {
+      background: var(--warm-white);
+    }
+    #bday-bg-2 {
+      background:
+        radial-gradient(ellipse 80% 65% at 50% 50%, #fde8ef 0%, var(--warm-white) 68%);
+    }
+    #bday-bg-3 {
+      /* brightest — final reveal */
+      background:
+        radial-gradient(ellipse 100% 90% at 50% 50%, #fddde7 0%, #fde8ef 40%, var(--warm-white) 72%),
+        radial-gradient(ellipse 50% 40% at 5%  95%, #fce4ec 0%, transparent 55%),
+        radial-gradient(ellipse 45% 35% at 95%  5%, #fce8ed 0%, transparent 55%);
+    }
+
+    /* sparkle + petal canvas */
+    #bday-canvas {
+      position: absolute; inset: 0; pointer-events: none; z-index: 3; opacity: 0;
+    }
+
+    /* — Shared scene layer — */
+    .bday-scene {
+      position: absolute; inset: 0; z-index: 5;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: clamp(24px,6vw,80px); text-align: center;
+      pointer-events: none;
+    }
+
+    /* Phase 1: "Today Is Different..." */
+    #bd-today {
+      font-family: 'Georgia', serif;
+      font-size: clamp(1.5rem, 5vw, 3.2rem);
+      font-weight: 400;
+      color: var(--charcoal-2);
+      letter-spacing: 0.04em;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+
+    /* Phase 2: "Because..." */
+    #bd-because {
+      font-family: 'Georgia', serif;
+      font-style: italic;
+      font-size: clamp(1.8rem, 6vw, 4rem);
+      font-weight: 400;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+
+    /* Phase 3+4 container */
+    #bd-reveal-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(12px, 2.5vw, 22px);
+    }
+
+    /* Cake emoji */
+    #bd-cake {
+      font-size: clamp(2.8rem, 9vw, 6rem);
+      line-height: 1;
+      opacity: 0;
+      transform: scale(0.4) translateY(20px);
+      will-change: transform, opacity;
+      display: block;
+    }
+
+    /* "IT'S YOUR BIRTHDAY 🎂" — the centrepiece */
+    #bd-main {
+      font-family: 'Georgia', serif;
+      font-size: clamp(2rem, 7.5vw, 5.8rem);
+      font-weight: 400;
+      color: var(--charcoal-2);
+      letter-spacing: 0.055em;
+      line-height: 1.1;
+      opacity: 0;
+      transform: scale(0.72) translateY(32px);
+      will-change: transform, opacity;
+      max-width: min(860px, 92vw);
+    }
+    #bd-main .bd-accent { color: var(--rose); }
+
+    /* "Happy Birthday Tamanna 💕" */
+    #bd-happy {
+      font-family: 'Georgia', serif;
+      font-style: italic;
+      font-size: clamp(1.1rem, 3.4vw, 2rem);
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      opacity: 0;
+      transform: translateY(18px);
+      will-change: transform, opacity;
+      margin-top: clamp(4px, 1vw, 10px);
+    }
+
+    /* CSS petal/sparkle shapes scattered around the stage */
+    .bd-petal {
+      position: absolute;
+      pointer-events: none;
+      border-radius: 50% 0 50% 0;
+      opacity: 0;
+      will-change: transform, opacity;
+      z-index: 4;
+    }
+
+    @media (max-width: 480px) {
+      #bd-main  { letter-spacing: 0.03em; }
+      #bd-today { letter-spacing: 0.02em; }
+    }
+
+    /* ═══ SECTION 6 — DUA ════════════════════════════════════ */
+    #dua-section {
+      position: relative;
+      width: 100%;
+      padding: clamp(90px,16vh,140px) clamp(24px,8vw,120px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+      background: var(--warm-white);
+    }
+
+    #dua-bg {
+      position: absolute; inset: 0; pointer-events: none; opacity: 0;
+      background:
+        radial-gradient(ellipse 85% 70% at 50% 45%, #fde8ef 0%, transparent 62%),
+        radial-gradient(ellipse 42% 36% at 4%  88%, #fce4ec 0%, transparent 55%),
+        radial-gradient(ellipse 38% 32% at 96% 8%,  #fce8ed 0%, transparent 55%);
+    }
+
+    #dua-canvas {
+      position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0;
+    }
+
+    #dua-heading {
+      font-family: 'Georgia', serif;
+      font-size: clamp(1rem, 2.8vw, 1.35rem);
+      font-weight: 400;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: center;
+      position: relative; z-index: 2;
+      opacity: 0;
+      transform: translateY(16px);
+    }
+
+    #dua-rule {
+      display: block; height: 1px; width: 0; margin: 16px auto 0; opacity: 0;
+      background: linear-gradient(to right, transparent, var(--rose) 40%, transparent);
+      position: relative; z-index: 2;
+    }
+
+    #dua-lines {
+      margin-top: clamp(48px, 9vh, 80px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(36px, 7vh, 64px);
+      position: relative; z-index: 2;
+      width: 100%;
+      max-width: min(740px, 92vw);
+    }
+
+    .dua-line {
+      text-align: center;
+      opacity: 0;
+      filter: blur(7px);
+      transform: translateY(24px);
+      will-change: transform, opacity, filter;
+    }
+
+    .dua-line-text {
+      font-family: 'Georgia', serif;
+      font-size: clamp(1.05rem, 3vw, 1.5rem);
+      font-weight: 400;
+      color: var(--charcoal-2);
+      line-height: 1.82;
+      letter-spacing: 0.01em;
+    }
+
+    .dua-line-dot {
+      display: block;
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--rose);
+      opacity: 0;
+      margin: 14px auto 0;
+    }
+
+    @media (max-width: 480px) {
+      .dua-line-text {
+        font-size: clamp(1rem, 4.5vw, 1.15rem);
+        line-height: 1.9;
+      }
+      #dua-lines { gap: clamp(30px, 8vw, 48px); }
+      #dua-heading { letter-spacing: 0.18em; }
+    }
+
+    /* ═══ SECTION 7 — PERSONAL MESSAGE ══════════════════════ */
+    #msg-section {
+      position: relative;
+      width: 100%;
+      padding: clamp(90px,15vh,140px) clamp(24px,8vw,120px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+      background: var(--warm-white);
+    }
+
+    #msg-bg {
+      position: absolute; inset: 0; pointer-events: none; opacity: 0;
+      background:
+        radial-gradient(ellipse 90% 75% at 50% 42%, #fde8ef 0%, transparent 62%),
+        radial-gradient(ellipse 45% 38% at 3%  90%, #fce4ec 0%, transparent 54%),
+        radial-gradient(ellipse 40% 32% at 97% 6%,  #fce8ed 0%, transparent 54%);
+    }
+
+    /* ── Heading ── */
+    #msg-heading {
+      font-family: 'Georgia', serif;
+      font-size: clamp(1rem, 2.8vw, 1.35rem);
+      font-weight: 400;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: center;
+      position: relative; z-index: 2;
+      opacity: 0;
+      transform: translateY(16px);
+    }
+
+    #msg-rule {
+      display: block; height: 1px; width: 0;
+      margin: 14px auto 0; opacity: 0;
+      background: linear-gradient(to right, transparent, var(--rose) 40%, transparent);
+      position: relative; z-index: 2;
+    }
+
+    /* ── Message body ── */
+    #msg-body {
+      margin-top: clamp(44px,8vh,72px);
+      width: 100%;
+      max-width: min(700px,92vw);
+      display: flex;
+      flex-direction: column;
+      gap: clamp(28px,5vh,44px);
+      position: relative; z-index: 2;
+    }
+
+    /* Every paragraph block starts hidden — GSAP reveals */
+    .msg-block {
+      opacity: 0;
+      transform: translateY(26px);
+      filter: blur(5px);
+      will-change: transform, opacity, filter;
+    }
+
+    .msg-block p {
+      font-family: 'Georgia', serif;
+      font-size: clamp(1.05rem, 2.8vw, 1.45rem);
+      font-weight: 400;
+      color: var(--charcoal-2);
+      line-height: 1.88;
+      letter-spacing: 0.01em;
+      text-align: center;
+    }
+
+    /* The birthday opener line is slightly larger */
+    #msg-opener p {
+      font-size: clamp(1.15rem, 3.2vw, 1.6rem);
+      font-style: italic;
+      color: var(--charcoal-2);
+    }
+
+    /* ── Separator between blocks ── */
+    .msg-sep {
+      display: block;
+      height: 1px;
+      width: 0;
+      margin: 0 auto;
+      opacity: 0;
+      background: linear-gradient(to right, transparent, var(--blush) 45%, transparent);
+    }
+
+    /* ── Signature area ── */
+    #msg-signature {
+      margin-top: clamp(48px,9vh,80px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(10px,2vh,18px);
+      position: relative; z-index: 2;
+    }
+
+    #msg-from {
+      font-family: 'Georgia', serif;
+      font-style: italic;
+      font-size: clamp(1rem, 2.6vw, 1.35rem);
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      opacity: 0;
+      transform: translateY(14px);
+      will-change: transform, opacity;
+    }
+
+    #msg-to {
+      font-family: 'Georgia', serif;
+      font-size: clamp(1.5rem, 5vw, 2.8rem);
+      font-weight: 400;
+      color: var(--charcoal-2);
+      letter-spacing: 0.05em;
+      text-align: center;
+      opacity: 0;
+      transform: scale(0.82) translateY(20px);
+      will-change: transform, opacity;
+    }
+
+    #msg-to .msg-to-accent { color: var(--rose); font-style: italic; }
+
+    /* glow ring behind the final line */
+    #msg-glow {
+      position: absolute;
+      width: clamp(200px,55vw,460px);
+      height: clamp(80px,18vw,160px);
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(242,196,206,0.32) 0%, transparent 68%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(0.5);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    @media (max-width: 480px) {
+      .msg-block p { font-size: clamp(1rem,4.5vw,1.15rem); line-height: 1.95; }
+      #msg-opener p { font-size: clamp(1.05rem,4.8vw,1.25rem); }
+      #msg-to { letter-spacing: 0.03em; }
+      #msg-heading { letter-spacing: 0.18em; }
+    }
+
+    /* ═══ SECTION 8 — INTERACTIVE GIFT ══════════════════════ */
+    #gift-section {
+      position: relative;
+      width: 100%;
+      padding: clamp(80px,13vh,130px) clamp(20px,6vw,80px) clamp(90px,14vh,140px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+      background: var(--warm-white);
+    }
+
+    #gift-bg {
+      position: absolute; inset: 0; pointer-events: none; opacity: 0;
+      background:
+        radial-gradient(ellipse 85% 70% at 50% 48%, #fde8ef 0%, transparent 64%),
+        radial-gradient(ellipse 44% 36% at 3%  88%, #fce4ec 0%, transparent 55%),
+        radial-gradient(ellipse 40% 32% at 97%  7%, #fce8ed 0%, transparent 55%);
+    }
+
+    /* heading */
+    #gift-heading {
+      font-family: 'Georgia', serif;
+      font-size: clamp(1.4rem, 4.2vw, 2.4rem);
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      color: var(--charcoal-2);
+      text-align: center;
+      position: relative; z-index: 2;
+      opacity: 0;
+      transform: translateY(18px);
+    }
+
+    /* ── Gift box ── */
+    #gift-scene {
+      position: relative;
+      margin-top: clamp(36px, 6vh, 56px);
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      /* touch-friendly hit area */
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    /* lid */
+    #gift-lid {
+      position: relative;
+      width:  clamp(110px, 24vw, 170px);
+      height: clamp(36px,  7.5vw, 52px);
+      background: linear-gradient(135deg, #f2c4ce 0%, #e8a0b0 55%, #d990a4 100%);
+      border-radius: 6px 6px 0 0;
+      box-shadow: 0 -2px 10px rgba(200,120,150,0.18), inset 0 1px 0 rgba(255,255,255,0.28);
+      transform-origin: center bottom;
+      z-index: 5;
+    }
+
+    /* ribbon on lid — vertical strip */
+    #gift-lid::before {
+      content: '';
+      position: absolute;
+      left: 50%; top: 0; bottom: 0;
+      width: clamp(14px, 3vw, 20px);
+      transform: translateX(-50%);
+      background: linear-gradient(to bottom, #fff8fb, #fce8ed);
+      border-radius: 2px;
+      opacity: 0.75;
+    }
+
+    /* bow */
+    #gift-bow {
+      position: absolute;
+      top: clamp(-18px,-4vw,-12px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: clamp(40px, 9vw, 60px);
+      height: clamp(20px, 4.5vw, 30px);
+      z-index: 6;
+    }
+
+    .bow-loop {
+      position: absolute;
+      width: 44%;
+      height: 100%;
+      background: linear-gradient(135deg, #f7d6de 0%, #f2c4ce 60%, #e8a0b0 100%);
+      border-radius: 50% 50% 50% 0 / 60% 60% 40% 0;
+      top: 0;
+    }
+    .bow-loop.left  { left: 0;   transform-origin: right center; transform: rotate(-15deg); }
+    .bow-loop.right { right: 0;  transform-origin: left  center; transform: scaleX(-1) rotate(-15deg); }
+    .bow-knot {
+      position: absolute;
+      width: clamp(9px,2vw,13px); height: clamp(9px,2vw,13px);
+      background: radial-gradient(circle, #fce8ed, #e8a0b0);
+      border-radius: 50%;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      z-index: 1;
+    }
+
+    /* box body */
+    #gift-box {
+      width:  clamp(110px, 24vw, 170px);
+      height: clamp(90px,  19vw, 136px);
+      background: linear-gradient(160deg, #fde8ef 0%, #f7d6de 45%, #f2c4ce 100%);
+      border-radius: 0 0 8px 8px;
+      position: relative;
+      box-shadow: 0 8px 24px rgba(200,120,150,0.18), inset 0 -3px 8px rgba(180,100,130,0.10);
+      overflow: hidden;
+    }
+
+    /* vertical ribbon on box */
+    #gift-box::before {
+      content: '';
+      position: absolute;
+      left: 50%; top: 0; bottom: 0;
+      width: clamp(14px, 3vw, 20px);
+      transform: translateX(-50%);
+      background: linear-gradient(to bottom, rgba(255,248,251,0.80), rgba(252,232,237,0.60));
+      border-radius: 0 0 2px 2px;
+    }
+    /* horizontal ribbon band on box */
+    #gift-box::after {
+      content: '';
+      position: absolute;
+      top: 38%; left: 0; right: 0;
+      height: clamp(14px, 3vw, 20px);
+      background: rgba(255,248,251,0.55);
+    }
+
+    /* inner light glow — revealed on open */
+    #gift-light {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 100%, rgba(253,233,239,0.95) 0%, transparent 70%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* "Open it..." label */
+    #gift-prompt {
+      margin-top: clamp(16px, 3vh, 24px);
+      font-family: 'Georgia', serif;
+      font-style: italic;
+      font-size: clamp(0.9rem, 2.4vw, 1.15rem);
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      position: relative; z-index: 2;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    /* particles container */
+    #gift-particles {
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: clamp(200px, 44vw, 340px);
+      height: clamp(200px, 40vw, 320px);
+      pointer-events: none;
+      z-index: 4;
+    }
+    .gp {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* reveal message */
+    #gift-message {
+      margin-top: clamp(28px, 5vh, 44px);
+      max-width: min(560px, 90vw);
+      text-align: center;
+      position: relative; z-index: 2;
+      opacity: 0;
+      transform: translateY(20px);
+      filter: blur(6px);
+    }
+    #gift-message p {
+      font-family: 'Georgia', serif;
+      font-size: clamp(1.05rem, 2.8vw, 1.4rem);
+      color: var(--charcoal-2);
+      line-height: 1.9;
+      font-style: italic;
+      letter-spacing: 0.01em;
+    }
+
+    /* "There's still something more..." */
+    #gift-more {
+      margin-top: clamp(20px,4vh,32px);
+      font-family: 'Georgia', serif;
+      font-size: clamp(0.8rem, 2vw, 1rem);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: center;
+      opacity: 0;
+      position: relative; z-index: 2;
+    }
+
+    /* Continue button */
+    #gift-btn {
+      margin-top: clamp(18px,3.5vh,28px);
+      padding: clamp(10px,2vh,14px) clamp(28px,6vw,44px);
+      font-family: 'Georgia', serif;
+      font-style: italic;
+      font-size: clamp(0.95rem, 2.4vw, 1.15rem);
+      letter-spacing: 0.06em;
+      color: var(--charcoal-2);
+      background: transparent;
+      border: 1px solid var(--rose);
+      border-radius: 50px;
+      cursor: pointer;
+      position: relative; z-index: 2;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: background 0.3s, color 0.3s, transform 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #gift-btn:hover, #gift-btn:focus-visible {
+      background: var(--rose);
+      color: #fff;
+      outline: none;
+    }
+    #gift-btn:active { transform: scale(0.96); }
+
+    @media (max-width: 480px) {
+      #gift-heading { letter-spacing: 0.02em; }
+    }
+
+    /* ═══ SECTION 9 — FINAL SURPRISE ════════════════════════ */
+    #final-section {
+      position: relative;
+      width: 100%;
+      min-height: 100svh;
+      padding: clamp(90px,16vh,150px) clamp(24px,8vw,120px) clamp(100px,18vh,160px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: var(--warm-white);
+    }
+
+    /* layered background — blooms progressively */
+    #final-bg-1 {
+      position: absolute; inset: 0; pointer-events: none; opacity: 0;
+      background: radial-gradient(ellipse 100% 85% at 50% 50%, #fde8ef 0%, var(--warm-white) 65%);
+    }
+    #final-bg-2 {
+      position: absolute; inset: 0; pointer-events: none; opacity: 0;
+      background:
+        radial-gradient(ellipse 70% 55% at 50% 48%, #fddde8 0%, transparent 60%),
+        radial-gradient(ellipse 40% 32% at 4%  90%, #fce4ec 0%, transparent 52%),
+        radial-gradient(ellipse 36% 28% at 96%  5%, #fce8ed 0%, transparent 52%);
+    }
+
+    /* petal canvas */
+    #final-canvas {
+      position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0;
+    }
+
+    /* shared text wrapper — centres everything */
+    #final-content {
+      position: relative; z-index: 3;
+      display: flex; flex-direction: column;
+      align-items: center; gap: clamp(28px,5.5vh,52px);
+      width: 100%; max-width: min(700px,92vw);
+      text-align: center;
+    }
+
+    /* "Wait... There's One Last Thing." */
+    #final-wait {
+      font-family: 'Georgia', serif;
+      font-size: clamp(1rem, 2.6vw, 1.3rem);
+      font-weight: 400;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--muted);
+      opacity: 0;
+      transform: translateY(16px);
+      will-change: transform, opacity;
+    }
+
+    /* "Happy Birthday, Tamanna 🎂💕" */
+    #final-bday {
+      font-family: 'Georgia', serif;
+      font-style: italic;
+      font-size: clamp(1.5rem, 4.8vw, 2.8rem);
+      font-weight: 400;
+      color: var(--charcoal-2);
+      letter-spacing: 0.03em;
+      line-height: 1.3;
+      opacity: 0;
+      transform: translateY(22px);
+      filter: blur(5px);
+      will-change: transform, opacity, filter;
+    }
+
+    /* blessing line */
+    #final-blessing {
+      font-family: 'Georgia', serif;
+      font-size: clamp(1rem, 2.8vw, 1.4rem);
+      font-weight: 400;
+      color: var(--charcoal);
+      line-height: 1.85;
+      letter-spacing: 0.01em;
+      opacity: 0;
+      transform: translateY(20px);
+      filter: blur(5px);
+      will-change: transform, opacity, filter;
+    }
+
+    /* thin rule between blessing and signature */
+    #final-rule {
+      height: 1px; width: 0;
+      background: linear-gradient(to right, transparent, var(--rose) 40%, transparent);
+      opacity: 0;
+    }
+
+    /* "From Hasnain Safi" */
+    #final-from {
+      font-family: 'Georgia', serif;
+      font-style: italic;
+      font-size: clamp(0.9rem, 2.4vw, 1.2rem);
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      opacity: 0;
+      transform: translateY(14px);
+      will-change: transform, opacity;
+    }
+
+    /* ── FINALE: "To My Pyari Pagli Tamanna 💕" ── */
+    #final-to-wrap {
+      position: relative;
+      display: flex; flex-direction: column; align-items: center;
+    }
+
+    /* soft glow behind the final line — no neon, just a warm bloom */
+    #final-glow {
+      position: absolute;
+      width:  clamp(260px, 70vw, 560px);
+      height: clamp(80px,  18vw, 150px);
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(242,196,206,0.30) 0%, transparent 68%);
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%) scale(0.4);
+      opacity: 0;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    #final-to {
+      font-family: 'Georgia', serif;
+      font-size: clamp(1.7rem, 5.5vw, 3.4rem);
+      font-weight: 400;
+      color: var(--charcoal-2);
+      letter-spacing: 0.04em;
+      opacity: 0;
+      transform: scale(0.80) translateY(24px);
+      filter: blur(6px);
+      will-change: transform, opacity, filter;
+    }
+    #final-to .final-accent { color: var(--rose); font-style: italic; }
+
+    @media (max-width: 480px) {
+      #final-wait  { letter-spacing: 0.16em; }
+      #final-to    { letter-spacing: 0.02em; }
+      #final-bday  { font-size: clamp(1.35rem,5.5vw,2rem); }
+    }
+
+    /* ═══ SECTION 10 — CELEBRATION ENDING ═══════════════════ */
+    #celebration-section {
+      position: relative;
+      width: 100%;
+      min-height: 100svh;
+      padding: clamp(80px,14vh,130px) clamp(20px,6vw,80px) clamp(90px,16vh,150px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: var(--warm-white);
+    }
+
+    /* soft radial wash — deepens as canvas loads */
+    #cel-bg {
+      position: absolute; inset: 0; pointer-events: none; opacity: 0;
+      background:
+        radial-gradient(ellipse 95% 80% at 50% 50%, #fddde8 0%, #fde8ef 35%, var(--warm-white) 68%),
+        radial-gradient(ellipse 45% 36% at 4%  90%, #fce4ec 0%, transparent 52%),
+        radial-gradient(ellipse 40% 30% at 96%  6%, #fce8ed 0%, transparent 52%);
+    }
+
+    /* canvas — petals, sparkles, hearts */
+    #cel-canvas {
+      position: absolute; inset: 0;
+      pointer-events: none; z-index: 1; opacity: 0;
+    }
+
+    /* content stack */
+    #cel-content {
+      position: relative; z-index: 3;
+      display: flex; flex-direction: column;
+      align-items: center;
+      gap: clamp(20px, 4vh, 36px);
+      text-align: center;
+    }
+
+    /* "Happy Birthday Tamanna 🎂" — the headline */
+    #cel-title {
+      font-family: 'Georgia', serif;
+      font-size: clamp(2rem, 6.5vw, 4.2rem);
+      font-weight: 400;
+      color: var(--charcoal-2);
+      letter-spacing: 0.04em;
+      line-height: 1.15;
+      opacity: 0;
+      transform: scale(0.82) translateY(28px);
+      filter: blur(6px);
+      will-change: transform, opacity, filter;
+    }
+
+    /* soft glow bloom behind the title */
+    #cel-title-glow {
+      position: absolute;
+      width: clamp(280px,65vw,580px);
+      height: clamp(80px,18vw,160px);
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(242,196,206,0.28) 0%, transparent 68%);
+      top: 0; left: 50%;
+      transform: translateX(-50%) scale(0.5);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* "💕" */
+    #cel-heart {
+      font-size: clamp(1.8rem, 5.5vw, 3.2rem);
+      line-height: 1;
+      opacity: 0;
+      transform: scale(0.4);
+      will-change: transform, opacity;
+    }
+
+    /* "Stay Happy. Keep Smiling." */
+    #cel-tagline {
+      font-family: 'Georgia', serif;
+      font-style: italic;
+      font-size: clamp(1rem, 2.8vw, 1.55rem);
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      opacity: 0;
+      transform: translateY(16px);
+      filter: blur(4px);
+      will-change: transform, opacity, filter;
+    }
+
+    /* replay button */
+    #cel-replay {
+      margin-top: clamp(24px, 5vh, 44px);
+      padding: clamp(10px,1.8vh,14px) clamp(26px,5.5vw,42px);
+      font-family: 'Georgia', serif;
+      font-style: italic;
+      font-size: clamp(0.85rem, 2.2vw, 1.05rem);
+      letter-spacing: 0.07em;
+      color: var(--charcoal-2);
+      background: transparent;
+      border: 1px solid var(--blush);
+      border-radius: 50px;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: background 0.28s ease, color 0.28s ease, border-color 0.28s ease, transform 0.18s ease;
+      -webkit-tap-highlight-color: transparent;
+      position: relative; z-index: 3;
+    }
+    #cel-replay:hover,
+    #cel-replay:focus-visible {
+      background: var(--rose);
+      border-color: var(--rose);
+      color: #fff;
+      outline: none;
+    }
+    #cel-replay:active { transform: scale(0.95); }
+
+    @media (max-width: 480px) {
+      #cel-title   { letter-spacing: 0.02em; }
+      #cel-tagline { letter-spacing: 0.04em; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 1 — HERO
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="hero" aria-label="Opening">
+    <div id="hero-bg"></div>
+    <canvas id="particle-canvas"></canvas>
+    <div class="hero-rule" id="hero-rule"></div>
+    <p class="hero-pre" id="hero-pre">A Little Surprise For You</p>
+    <div class="hero-name-wrap">
+      <h1 class="hero-name" id="hero-name">Tamanna</h1>
+    </div>
+    <span class="hero-heart" id="hero-heart" aria-label="love">&#128149;</span>
+    <div class="scroll-hint" id="scroll-hint">
+      <span>Scroll to discover something special</span>
+      <div class="scroll-arrow" id="scroll-arrow"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 2 — CINEMATIC SCROLL REVEAL
+  ═══════════════════════════════════════════════════════════ -->
+  <div id="reveal-outer" aria-label="Scroll reveal">
+    <div id="reveal-stage" role="region" aria-live="polite">
+      <div id="reveal-bg"></div>
+      <canvas id="reveal-canvas"></canvas>
+      <div class="r-orb" id="orb-a"></div>
+      <div class="r-orb" id="orb-b"></div>
+      <div class="r-orb" id="orb-c"></div>
+      <div class="r-orb" id="orb-d"></div>
+      <div class="r-scene" id="scene-1" aria-hidden="true">
+        <p id="s1-wait">Wait&#8230;</p>
+      </div>
+      <div class="r-scene" id="scene-2" aria-hidden="true">
+        <p id="s2-question">Do you know what makes today special?</p>
+      </div>
+      <div class="r-scene" id="scene-3" aria-hidden="true">
+        <div class="s3-glow-ring" id="s3-glow"></div>
+        <p id="s3-you">YOU,&#160;<span class="r-accent">TAMANNA</span>&#160;&#10024;</p>
+      </div>
+      <div class="r-scene" id="scene-4" aria-hidden="true">
+        <p id="s4-because">Because today is your day.<span id="s4-rule"></span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 3 — COUNTDOWN
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="countdown-section" aria-label="Birthday countdown">
+    <div id="cd-bg"></div>
+    <h2 id="cd-heading">
+      Counting Down To Your Special Moment &#10024;
+      <span id="cd-rule"></span>
+    </h2>
+    <div id="cd-grid" aria-live="polite" aria-atomic="true">
+      <div class="cd-unit" id="cd-days" aria-label="Days">
+        <div class="cd-num-wrap"><span class="cd-num" id="num-days">00</span></div>
+        <div class="cd-bar"></div>
+        <span class="cd-label">Days</span>
+      </div>
+      <span class="cd-sep" aria-hidden="true">&#183;</span>
+      <div class="cd-unit" id="cd-hours" aria-label="Hours">
+        <div class="cd-num-wrap"><span class="cd-num" id="num-hours">00</span></div>
+        <div class="cd-bar"></div>
+        <span class="cd-label">Hours</span>
+      </div>
+      <span class="cd-sep" aria-hidden="true">&#183;</span>
+      <div class="cd-unit" id="cd-minutes" aria-label="Minutes">
+        <div class="cd-num-wrap"><span class="cd-num" id="num-minutes">00</span></div>
+        <div class="cd-bar"></div>
+        <span class="cd-label">Minutes</span>
+      </div>
+      <span class="cd-sep" aria-hidden="true">&#183;</span>
+      <div class="cd-unit" id="cd-seconds" aria-label="Seconds">
+        <div class="cd-num-wrap"><span class="cd-num" id="num-seconds">00</span></div>
+        <div class="cd-bar"></div>
+        <span class="cd-label">Seconds</span>
+      </div>
+    </div>
+    <div id="cd-placeholder" role="status">
+      <p>Set the birthday date in the script<br>to start the countdown.</p>
+      <small>&#8212; BIRTHDAY_DATE variable &#8212;</small>
+    </div>
+    <div id="cd-arrived" role="status">
+      <span class="arrived-emoji">&#127881;</span>
+      <p>Today is your day,<br>Tamanna!</p>
+      <span class="arrived-emoji">&#127881;</span>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 4 — BIRTHDAY REVEAL
+  ═══════════════════════════════════════════════════════════ -->
+  <div id="bday-outer" aria-label="Birthday reveal">
+    <div id="bday-stage" role="region" aria-live="polite">
+
+      <!-- layered backgrounds -->
+      <div class="bday-bg-layer" id="bday-bg-1"></div>
+      <div class="bday-bg-layer" id="bday-bg-2"></div>
+      <div class="bday-bg-layer" id="bday-bg-3"></div>
+
+      <!-- sparkle/petal canvas -->
+      <canvas id="bday-canvas"></canvas>
+
+      <!-- CSS petals (positioned by JS) -->
+      <div class="bd-petal" id="bp-1"></div>
+      <div class="bd-petal" id="bp-2"></div>
+      <div class="bd-petal" id="bp-3"></div>
+      <div class="bd-petal" id="bp-4"></div>
+      <div class="bd-petal" id="bp-5"></div>
+      <div class="bd-petal" id="bp-6"></div>
+      <div class="bd-petal" id="bp-7"></div>
+      <div class="bd-petal" id="bp-8"></div>
+
+      <!-- Phase 1: Today Is Different -->
+      <div class="bday-scene" id="bds-1" aria-hidden="true">
+        <p id="bd-today">Today Is Different&#8230;</p>
+      </div>
+
+      <!-- Phase 2: Because -->
+      <div class="bday-scene" id="bds-2" aria-hidden="true">
+        <p id="bd-because">Because&#8230;</p>
+      </div>
+
+      <!-- Phase 3+4: Main reveal + happy birthday -->
+      <div class="bday-scene" id="bds-3" aria-hidden="true">
+        <div id="bd-reveal-wrap">
+          <span id="bd-cake" aria-hidden="true">&#127874;</span>
+          <h2 id="bd-main">
+            IT&#8217;S YOUR<br>
+            <span class="bd-accent">BIRTHDAY</span>
+          </h2>
+          <p id="bd-happy">Happy Birthday, Tamanna &#128149;</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 6 — DUA
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="dua-section" aria-label="A little dua for Tamanna">
+
+    <div id="dua-bg"></div>
+    <canvas id="dua-canvas" aria-hidden="true"></canvas>
+
+    <h2 id="dua-heading">
+      A Little Dua For You &#129293;
+      <span id="dua-rule"></span>
+    </h2>
+
+    <div id="dua-lines">
+
+      <div class="dua-line" id="dua-1">
+        <p class="dua-line-text">Allah aap ko hamesha khush rakhe.</p>
+        <span class="dua-line-dot"></span>
+      </div>
+
+      <div class="dua-line" id="dua-2">
+        <p class="dua-line-text">Allah aap ki izzat ki hifazat kare<br>aur bure logon se aap ko bachaye.</p>
+        <span class="dua-line-dot"></span>
+      </div>
+
+      <div class="dua-line" id="dua-3">
+        <p class="dua-line-text">Allah aap ke har dream ko poora kare.</p>
+        <span class="dua-line-dot"></span>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 7 — PERSONAL MESSAGE
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="msg-section" aria-label="Personal message from Hasnain">
+
+    <div id="msg-bg"></div>
+
+    <!-- Heading -->
+    <h2 id="msg-heading">
+      Something From My Heart &#128140;
+      <span id="msg-rule"></span>
+    </h2>
+
+    <!-- Message body -->
+    <div id="msg-body">
+
+      <!-- Birthday opener -->
+      <div class="msg-block" id="msg-opener">
+        <p>Happy Birthday Tamanna &#127874;&#128149;</p>
+      </div>
+
+      <span class="msg-sep" id="sep-1"></span>
+
+      <!-- Dua block -->
+      <div class="msg-block" id="msg-dua">
+        <p>
+          Allah aap ko hamesha khush rakhe.<br>
+          Allah aap ki izzat ki hifazat kare aur bure logon se aap ko bachaye.<br>
+          Allah aap ke har dream ko poora kare.
+        </p>
+      </div>
+
+      <span class="msg-sep" id="sep-2"></span>
+
+      <!-- Heart message -->
+      <div class="msg-block" id="msg-heart">
+        <p>
+          Main aap ke liye hamesha dua karunga,<br>
+          aur mere dil mein aap ke liye jo thodi si mohabbat hai,<br>
+          woh bhi hamesha rahegi, InshaAllah. &#10084;&#65039;
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Signature -->
+    <div id="msg-signature">
+      <div id="msg-glow"></div>
+      <p id="msg-from">From Hasnain Safi</p>
+      <p id="msg-to">To My <span class="msg-to-accent">Pyari Pagli</span> Tamanna &#128149;</p>
+    </div>
+
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 8 — INTERACTIVE GIFT
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="gift-section" aria-label="Interactive gift for Tamanna">
+
+    <div id="gift-bg"></div>
+
+    <h2 id="gift-heading">One More Surprise &#127873;</h2>
+
+    <!-- Gift illustration -->
+    <div id="gift-scene" role="button" tabindex="0"
+         aria-label="Tap to open gift" aria-pressed="false">
+
+      <!-- Lid (lifts on open) -->
+      <div id="gift-lid">
+        <div id="gift-bow">
+          <div class="bow-loop left"></div>
+          <div class="bow-loop right"></div>
+          <div class="bow-knot"></div>
+        </div>
+      </div>
+
+      <!-- Box -->
+      <div id="gift-box">
+        <div id="gift-light"></div>
+      </div>
+
+      <!-- Particle dots (positioned by JS) -->
+      <div id="gift-particles" aria-hidden="true">
+        <div class="gp" id="gp1"></div>
+        <div class="gp" id="gp2"></div>
+        <div class="gp" id="gp3"></div>
+        <div class="gp" id="gp4"></div>
+        <div class="gp" id="gp5"></div>
+        <div class="gp" id="gp6"></div>
+        <div class="gp" id="gp7"></div>
+        <div class="gp" id="gp8"></div>
+      </div>
+    </div>
+
+    <p id="gift-prompt">Open it&#8230;</p>
+
+    <!-- Hidden message revealed on open -->
+    <div id="gift-message" aria-live="polite">
+      <p>
+        May Allah always keep you happy,<br>
+        protect you,<br>
+        and fulfil your beautiful dreams. &#10024;
+      </p>
+    </div>
+
+    <p id="gift-more">There&#8217;s still something more&#8230;</p>
+
+    <button id="gift-btn" aria-label="Continue to next section">
+      Continue &#128149;
+    </button>
+
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 9 — FINAL SURPRISE
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="final-section" aria-label="Final message for Tamanna">
+
+    <!-- layered backgrounds -->
+    <div id="final-bg-1"></div>
+    <div id="final-bg-2"></div>
+
+    <!-- floating petal canvas -->
+    <canvas id="final-canvas" aria-hidden="true"></canvas>
+
+    <div id="final-content">
+
+      <!-- Line 1 -->
+      <p id="final-wait">Wait&#8230; There&#8217;s One Last Thing.</p>
+
+      <!-- Line 2 -->
+      <p id="final-bday">Happy Birthday, Tamanna &#127874;&#128149;</p>
+
+      <!-- Line 3 -->
+      <p id="final-blessing">
+        May every new chapter of your life<br>
+        bring you happiness, peace<br>
+        and beautiful moments.
+      </p>
+
+      <!-- Rule -->
+      <span id="final-rule"></span>
+
+      <!-- Line 4 -->
+      <p id="final-from">From Hasnain Safi</p>
+
+      <!-- Line 5 — finale -->
+      <div id="final-to-wrap">
+        <div id="final-glow"></div>
+        <p id="final-to">To My <span class="final-accent">Pyari Pagli</span> Tamanna &#128149;</p>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 10 — CELEBRATION ENDING
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="celebration-section" aria-label="Birthday celebration ending">
+
+    <div id="cel-bg"></div>
+    <canvas id="cel-canvas" aria-hidden="true"></canvas>
+
+    <div id="cel-content">
+
+      <!-- Glow + title -->
+      <div style="position:relative;display:flex;align-items:center;justify-content:center;">
+        <div id="cel-title-glow"></div>
+        <h2 id="cel-title">Happy Birthday Tamanna &#127874;</h2>
+      </div>
+
+      <!-- Heart -->
+      <p id="cel-heart" aria-hidden="true">&#128149;</p>
+
+      <!-- Tagline -->
+      <p id="cel-tagline">Stay Happy. Keep Smiling.</p>
+
+      <!-- Replay button -->
+      <button id="cel-replay" aria-label="Replay the surprise from the beginning">
+        Replay The Surprise &#x21BB;
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       SCRIPTS
+  ═══════════════════════════════════════════════════════════ -->
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    /* ─────────────────────────────────────────────────────────
+       CONFIGURE THE BIRTHDAY DATE HERE
+    ───────────────────────────────────────────────────────── */
+    const BIRTHDAY_DATE = null; // ← e.g. new Date('2025-11-14T00:00:00')
+
+
+    /* ─────────────────────────────────────────────────────────
+       SHARED UTILITIES
+    ───────────────────────────────────────────────────────── */
+    function splitIntoChars(el) {
+      const text = el.textContent;
+      el.textContent = '';
+      el.style.opacity = '1';
+      [...text].forEach(ch => {
+        const s = document.createElement('span');
+        s.className = 'char';
+        s.textContent = ch === ' ' ? '\u00A0' : ch;
+        el.appendChild(s);
+      });
+      return el.querySelectorAll('.char');
+    }
+
+    function createParticleSystem(canvasEl, count) {
+      const ctx = canvasEl.getContext('2d');
+      const PALETTE = [
+        'rgba(232,160,176,', 'rgba(242,196,206,',
+        'rgba(252,232,237,', 'rgba(253,231,238,',
+      ];
+      let W = 0, H = 0, live = false;
+      const pool = [];
+      function resize() {
+        W = canvasEl.width  = canvasEl.offsetWidth;
+        H = canvasEl.height = canvasEl.offsetHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize, { passive: true });
+      function spawn(ageMs) {
+        return {
+          x: Math.random() * (W || 400), y: Math.random() * (H || 700),
+          r: Math.random() * 3.5 + 1.2,
+          col: PALETTE[Math.floor(Math.random() * PALETTE.length)],
+          ta: Math.random() * 0.50 + 0.10,
+          dx: (Math.random() - 0.5) * 0.28,
+          dy: -(Math.random() * 0.38 + 0.09),
+          born: performance.now() - (ageMs || 0),
+          life: Math.random() * 11000 + 7000,
+        };
+      }
+      for (let i = 0; i < count; i++) pool.push(spawn(Math.random() * 5000));
+      (function tick(now) {
+        requestAnimationFrame(tick);
+        if (!live) return;
+        ctx.clearRect(0, 0, W, H);
+        pool.forEach((p, i) => {
+          const t = (now - p.born) / p.life;
+          const a = t < 0.15 ? (t / 0.15) * p.ta : t > 0.80 ? ((1 - t) / 0.20) * p.ta : p.ta;
+          p.x += p.dx; p.y += p.dy;
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 2.6, 0, Math.PI * 2);
+          ctx.fillStyle = p.col + (a * 0.18) + ')'; ctx.fill();
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = p.col + a + ')'; ctx.fill();
+          if (t >= 1 || p.y < -24 || p.x < -24 || p.x > W + 24) pool[i] = spawn(0);
+        });
+      })(performance.now());
+      return { enable() { live = true; } };
+    }
+
+
+    /* ─────────────────────────────────────────────────────────
+       SECTION 1 — HERO
+    ───────────────────────────────────────────────────────── */
+    const heroFX = createParticleSystem(document.getElementById('particle-canvas'), 55);
+    (function() {
+      const chars = splitIntoChars(document.getElementById('hero-name'));
+      gsap.set(chars, { opacity: 0, y: 28, rotationX: -25, transformPerspective: 600 });
+      gsap.timeline({ defaults: { ease: 'power3.out' } })
+        .to('#hero-bg',     { opacity: 1, duration: 2.2, ease: 'power2.inOut' },          0   )
+        .to('#hero-rule',   { width: 48, opacity: 1, duration: 1.0, ease: 'power2.out' }, 0.6 )
+        .to('#hero-pre',    { opacity: 1, y: 0, duration: 1.1 },                          1.0 )
+        .to(chars,          { opacity: 1, y: 0, rotationX: 0, stagger: 0.06, duration: 0.9 }, 1.7)
+        .to('#hero-heart',  { opacity: 1, scale: 1, duration: 0.8, ease: 'back.out(1.6)' }, 2.9)
+        .add(() => heroFX.enable(),                                                        2.2 )
+        .to('#scroll-hint', { opacity: 1, y: 0, duration: 1.0 },                          3.4 )
+        .add(() => {
+          gsap.to('#scroll-arrow', {
+            scaleY: 0.35, transformOrigin: 'top center',
+            duration: 1.1, ease: 'power1.inOut', repeat: -1, yoyo: true,
+          });
+        }, 4.2);
+    })();
+    (function() {
+      const n = document.getElementById('hero-name');
+      const h = document.getElementById('hero-heart');
+      const shift = (dx, dy) => {
+        gsap.to(n, { x: dx*8, y: dy*5, duration: 1.8, ease: 'power1.out', overwrite: 'auto' });
+        gsap.to(h, { x: dx*5, y: dy*3, duration: 2.0, ease: 'power1.out', overwrite: 'auto' });
+      };
+      window.addEventListener('mousemove', e => shift(
+        (e.clientX - innerWidth / 2) / (innerWidth / 2),
+        (e.clientY - innerHeight / 2) / (innerHeight / 2)
+      ), { passive: true });
+      if (window.DeviceOrientationEvent) {
+        window.addEventListener('deviceorientation',
+          e => shift((e.gamma || 0) / 45, (e.beta || 0) / 90), { passive: true });
+      }
+    })();
+
+
+    /* ─────────────────────────────────────────────────────────
+       SECTION 2 — SCROLL REVEAL
+    ───────────────────────────────────────────────────────── */
+    (function() {
+      const outer = document.getElementById('reveal-outer');
+      function setHeight() { outer.style.height = (4.7 * window.innerHeight) + 'px'; }
+      setHeight();
+      window.addEventListener('resize', () => { setHeight(); ScrollTrigger.refresh(); }, { passive: true });
+      const revealFX = createParticleSystem(document.getElementById('reveal-canvas'), 48);
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo('#reveal-bg', { opacity:0 }, { opacity:1, ease:'power1.inOut', duration:0.07 }, 0);
+      tl.fromTo(['#orb-a','#orb-b','#orb-c','#orb-d'], { opacity:0, scale:0.65 },
+        { opacity:1, scale:1, ease:'power2.out', duration:0.10, stagger:0.012 }, 0.01);
+      tl.add(() => revealFX.enable(), 0.04);
+      tl.fromTo('#s1-wait', { opacity:0, y:24, scale:0.92 }, { opacity:1, y:0, scale:1, ease:'power2.out', duration:0.11 }, 0.07);
+      tl.to('#s1-wait', { opacity:0, y:-36, scale:1.08, ease:'power2.in', duration:0.09 }, 0.21);
+      tl.fromTo('#s2-question', { opacity:0, y:30 }, { opacity:1, y:0, ease:'power2.out', duration:0.12 }, 0.30);
+      tl.to('#s2-question', { opacity:0, y:-30, ease:'power2.in', duration:0.09 }, 0.45);
+      tl.fromTo('#s3-glow', { opacity:0, scale:0.50 }, { opacity:1, scale:1, ease:'power1.out', duration:0.14 }, 0.52);
+      tl.fromTo('#s3-you', { opacity:0, scale:0.76, y:32 }, { opacity:1, scale:1, y:0, ease:'back.out(1.25)', duration:0.16 }, 0.57);
+      tl.to(['#s3-glow','#s3-you'], { opacity:0, scale:1.08, ease:'power2.in', duration:0.08, stagger:0.025 }, 0.76);
+      tl.fromTo('#s4-because', { opacity:0, y:22 }, { opacity:1, y:0, ease:'power2.out', duration:0.12 }, 0.85);
+      tl.fromTo('#s4-rule', { width:'0%', opacity:0 }, { width:'56%', opacity:1, ease:'power2.inOut', duration:0.09 }, 0.89);
+      tl.fromTo('#orb-a', { y:0 }, { y:-70, ease:'none', duration:1 }, 0);
+      tl.fromTo('#orb-b', { y:0 }, { y:-50, ease:'none', duration:1 }, 0);
+      tl.fromTo('#orb-c', { y:0 }, { y:-35, ease:'none', duration:1 }, 0);
+      tl.fromTo('#orb-d', { y:0 }, { y:-45, ease:'none', duration:1 }, 0);
+      ScrollTrigger.create({
+        trigger:'#reveal-outer', start:'top top', end:'bottom bottom',
+        scrub:1.6, animation:tl, invalidateOnRefresh:true,
+      });
+      const SIDS = ['scene-1','scene-2','scene-3','scene-4'];
+      let prev = null;
+      ScrollTrigger.create({
+        trigger:'#reveal-outer', start:'top top', end:'bottom bottom',
+        onUpdate(self) {
+          const p = self.progress;
+          const active = p>=0.85?'scene-4':p>=0.57?'scene-3':p>=0.30?'scene-2':p>=0.07?'scene-1':null;
+          if (active!==prev) {
+            SIDS.forEach(id => document.getElementById(id)?.setAttribute('aria-hidden','true'));
+            if (active) document.getElementById(active)?.setAttribute('aria-hidden','false');
+            prev = active;
+          }
+        },
+      });
+    })();
+
+
+    /* ─────────────────────────────────────────────────────────
+       SECTION 3 — COUNTDOWN
+    ───────────────────────────────────────────────────────── */
+    (function() {
+      const pad = n => String(n).padStart(2,'0');
+      const MODE = BIRTHDAY_DATE===null ? 'placeholder'
+                 : BIRTHDAY_DATE<=new Date() ? 'arrived' : 'live';
+      const grid        = document.getElementById('cd-grid');
+      const placeholder = document.getElementById('cd-placeholder');
+      const arrived     = document.getElementById('cd-arrived');
+      if (MODE==='placeholder') { grid.style.display='none'; placeholder.style.display='flex'; }
+      else if (MODE==='arrived') { grid.style.display='none'; arrived.style.display='flex'; }
+      ScrollTrigger.create({
+        trigger:'#countdown-section', start:'top 82%', once:true,
+        onEnter() {
+          const etl = gsap.timeline({ defaults:{ ease:'power2.out' } });
+          etl.to('#cd-bg',      { opacity:1, duration:1.2 }, 0);
+          etl.to('#cd-heading', { opacity:1, y:0, duration:0.9 }, 0.15);
+          etl.to('#cd-rule',    { width:'44%', opacity:1, duration:0.8, ease:'power2.inOut' }, 0.55);
+          if (MODE==='live') {
+            etl.to('.cd-unit', { opacity:1, y:0, duration:0.7, stagger:0.10 }, 0.40);
+            etl.to('.cd-sep',  { opacity:1, duration:0.5, stagger:0.08 }, 0.50);
+          }
+          if (MODE==='placeholder') etl.to('#cd-placeholder', { opacity:1, y:0, duration:0.8 }, 0.40);
+          if (MODE==='arrived')     etl.to('#cd-arrived', { opacity:1, duration:0.9, ease:'back.out(1.2)' }, 0.40);
+        },
+      });
+      if (MODE!=='live') return;
+      const numEls = {
+        d: document.getElementById('num-days'),
+        h: document.getElementById('num-hours'),
+        m: document.getElementById('num-minutes'),
+        s: document.getElementById('num-seconds'),
+      };
+      function flipNum(el, newVal) {
+        const str = pad(newVal);
+        if (el.textContent===str) return;
+        gsap.to(el, { y:-14, opacity:0, scale:0.88, duration:0.18, ease:'power2.in',
+          onComplete() {
+            el.textContent = str;
+            gsap.fromTo(el, { y:14, opacity:0, scale:0.92 }, { y:0, opacity:1, scale:1, duration:0.26, ease:'power2.out' });
+          },
+        });
+      }
+      function tick() {
+        const diff = BIRTHDAY_DATE - Date.now();
+        if (diff<=0) {
+          grid.style.display='none'; arrived.style.display='flex';
+          gsap.fromTo('#cd-arrived', { opacity:0, scale:0.92 }, { opacity:1, scale:1, duration:0.9, ease:'back.out(1.2)' });
+          return;
+        }
+        const ts = Math.floor(diff/1000);
+        flipNum(numEls.d, Math.floor(ts/86400));
+        flipNum(numEls.h, Math.floor((ts%86400)/3600));
+        flipNum(numEls.m, Math.floor((ts%3600)/60));
+        flipNum(numEls.s, ts%60);
+        setTimeout(tick, 1000);
+      }
+      const seedDiff = BIRTHDAY_DATE - Date.now();
+      if (seedDiff>0) {
+        const ts = Math.floor(seedDiff/1000);
+        numEls.d.textContent = pad(Math.floor(ts/86400));
+        numEls.h.textContent = pad(Math.floor((ts%86400)/3600));
+        numEls.m.textContent = pad(Math.floor((ts%3600)/60));
+        numEls.s.textContent = pad(ts%60);
+      }
+      setTimeout(tick, 1000);
+    })();
+
+
+    /* ─────────────────────────────────────────────────────────
+       SECTION 4 — BIRTHDAY REVEAL
+       ─────────────────────────────────────────────────────────
+       Scroll-progress map  (0.0 → 1.0)
+
+         0.00–0.07   bg-1 base in
+         0.06–0.22   Phase 1: "Today Is Different…" rises in
+         0.24–0.33   Phase 1 out
+         0.33–0.46   Phase 2: "Because…" in  +  bg-2 brightens
+         0.47–0.56   Phase 2 out
+         0.54–0.62   bg-3 blooms (brightest)
+         0.58–0.70   cake drops in
+         0.62–0.78   "IT'S YOUR BIRTHDAY" scales in
+         0.72–0.86   "Happy Birthday Tamanna" rises in
+         0.60–1.00   canvas sparkles active
+         0.55–1.00   CSS petals drift in
+         0.00–1.00   (stage stays pinned throughout)
+    ───────────────────────────────────────────────────────── */
+    (function() {
+
+      /* ── 1. Outer scroll-space height ── */
+      const outer = document.getElementById('bday-outer');
+      function setHeight() { outer.style.height = (5.2 * window.innerHeight) + 'px'; }
+      setHeight();
+      window.addEventListener('resize', () => { setHeight(); ScrollTrigger.refresh(); }, { passive: true });
+
+      /* ── 2. CSS petal setup ─────────────────────────────────
+         Position and style each petal div randomly;
+         GSAP will animate opacity + drift via the timeline.
+      ──────────────────────────────────────────────────────── */
+      const PETAL_PALETTE = [
+        '#f2c4ce', '#e8a0b0', '#fce8ed', '#f7d6de',
+        '#fde8ef', '#f0b8c8',
+      ];
+      const petalDefs = [
+        { top:'8%',  left:'6%',  w:14, h:10, rot:-28 },
+        { top:'14%', left:'82%', w:10, h:7,  rot: 42 },
+        { top:'72%', left:'4%',  w:12, h:8,  rot:-55 },
+        { top:'78%', left:'88%', w:16, h:10, rot: 18 },
+        { top:'42%', left:'92%', w:9,  h:6,  rot:-70 },
+        { top:'50%', left:'2%',  w:11, h:7,  rot: 60 },
+        { top:'25%', left:'50%', w:8,  h:5,  rot:-35 },
+        { top:'88%', left:'45%', w:13, h:9,  rot: 25 },
+      ];
+      petalDefs.forEach((d, i) => {
+        const el = document.getElementById('bp-' + (i + 1));
+        el.style.cssText = `
+          top:${d.top}; left:${d.left};
+          width:${d.w}px; height:${d.h}px;
+          background:${PETAL_PALETTE[i % PETAL_PALETTE.length]};
+          transform: rotate(${d.rot}deg) scale(0.3);
+          opacity: 0;
+        `;
+      });
+
+      /* ── 3. Canvas sparkle + petal particle system ──────────
+         Two particle types:
+           'spark' — tiny 4-point star outline
+           'dot'   — soft filled circle (small petal)
+      ──────────────────────────────────────────────────────── */
+      const bdCanvas = document.getElementById('bday-canvas');
+      const bdCtx    = bdCanvas.getContext('2d');
+      let BW = 0, BH = 0, bdLive = false;
+      const bdPool = [];
+
+      function bdResize() {
+        BW = bdCanvas.width  = bdCanvas.offsetWidth;
+        BH = bdCanvas.height = bdCanvas.offsetHeight;
+      }
+      bdResize();
+      window.addEventListener('resize', bdResize, { passive: true });
+
+      const BD_PALETTE = [
+        'rgba(242,196,206,', 'rgba(232,160,176,',
+        'rgba(252,232,237,', 'rgba(240,184,200,',
+        'rgba(253,220,232,',
+      ];
+
+      function bdSpawn() {
+        const type = Math.random() < 0.35 ? 'spark' : 'dot';
+        return {
+          type,
+          x:    Math.random() * (BW || 400),
+          y:    (BH || 700) + Math.random() * 60,   /* start below viewport */
+          r:    type === 'spark' ? Math.random() * 3 + 2
+                                 : Math.random() * 4 + 1.5,
+          col:  BD_PALETTE[Math.floor(Math.random() * BD_PALETTE.length)],
+          ta:   Math.random() * 0.65 + 0.18,
+          dx:   (Math.random() - 0.5) * 0.5,
+          dy:   -(Math.random() * 0.7 + 0.3),
+          rot:  Math.random() * Math.PI * 2,
+          drot: (Math.random() - 0.5) * 0.04,
+          born: performance.now(),
+          life: Math.random() * 9000 + 5000,
+        };
+      }
+
+      /* pre-seed — spread across stage so it looks full on first enter */
+      for (let i = 0; i < 70; i++) {
+        const p = bdSpawn();
+        p.y    = Math.random() * (BH || 700);
+        p.born = performance.now() - Math.random() * 5000;
+        bdPool.push(p);
+      }
+
+      function drawStar(ctx, x, y, r, rot, a, col) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(rot);
+        ctx.beginPath();
+        for (let i = 0; i < 4; i++) {
+          const ang = (i / 4) * Math.PI * 2;
+          const ox  = Math.cos(ang) * r;
+          const oy  = Math.sin(ang) * r;
+          ctx.moveTo(0, 0);
+          ctx.lineTo(ox, oy);
+        }
+        ctx.strokeStyle = col + a + ')';
+        ctx.lineWidth   = 1;
+        ctx.stroke();
+        /* tiny dot at centre */
+        ctx.beginPath();
+        ctx.arc(0, 0, r * 0.25, 0, Math.PI * 2);
+        ctx.fillStyle = col + (a * 0.8) + ')';
+        ctx.fill();
+        ctx.restore();
+      }
+
+      (function bdTick(now) {
+        requestAnimationFrame(bdTick);
+        if (!bdLive) return;
+        bdCtx.clearRect(0, 0, BW, BH);
+        bdPool.forEach((p, i) => {
+          const t = (now - p.born) / p.life;
+          const a = t < 0.12 ? (t / 0.12) * p.ta
+                  : t > 0.78 ? ((1 - t) / 0.22) * p.ta
+                  : p.ta;
+          p.x   += p.dx;
+          p.y   += p.dy;
+          p.rot += p.drot;
+
+          if (p.type === 'spark') {
+            drawStar(bdCtx, p.x, p.y, p.r, p.rot, a, p.col);
+          } else {
+            /* soft petal dot with glow */
+            bdCtx.beginPath();
+            bdCtx.ellipse(p.x, p.y, p.r * 1.8, p.r * 1.1, p.rot, 0, Math.PI * 2);
+            bdCtx.fillStyle = p.col + (a * 0.20) + ')';
+            bdCtx.fill();
+            bdCtx.beginPath();
+            bdCtx.ellipse(p.x, p.y, p.r, p.r * 0.62, p.rot, 0, Math.PI * 2);
+            bdCtx.fillStyle = p.col + a + ')';
+            bdCtx.fill();
+          }
+
+          if (t >= 1 || p.y < -30) bdPool[i] = bdSpawn();
+        });
+      })(performance.now());
+
+      /* ── 4. GSAP scrubbed timeline ──────────────────────────
+         All progress values are normalised 0 → 1.
+         'duration' in a paused+scrubbed timeline = proportion
+         of the full progress range, not wall-clock seconds.
+      ──────────────────────────────────────────────────────── */
+      const tl = gsap.timeline({ paused: true });
+
+      /* bg-1 always visible as base */
+      tl.fromTo('#bday-bg-1', { opacity:0 }, { opacity:1, duration:0.07, ease:'none' }, 0);
+
+      /* Phase 1 in */
+      tl.fromTo('#bd-today',
+        { opacity:0, y:26, scale:0.94 },
+        { opacity:1, y:0,  scale:1,   duration:0.14, ease:'power2.out' }, 0.06);
+
+      /* Phase 1 out */
+      tl.to('#bd-today',
+        { opacity:0, y:-32, scale:1.06, duration:0.09, ease:'power2.in' }, 0.24);
+
+      /* bg-2 softly blooms for Phase 2 */
+      tl.fromTo('#bday-bg-2',
+        { opacity:0 }, { opacity:1, duration:0.13, ease:'power1.inOut' }, 0.30);
+
+      /* Phase 2 in */
+      tl.fromTo('#bd-because',
+        { opacity:0, y:28 },
+        { opacity:1, y:0,  duration:0.12, ease:'power2.out' }, 0.33);
+
+      /* Phase 2 out */
+      tl.to('#bd-because',
+        { opacity:0, y:-30, duration:0.09, ease:'power2.in' }, 0.47);
+
+      /* bg-3 brightest bloom */
+      tl.fromTo('#bday-bg-3',
+        { opacity:0 }, { opacity:1, duration:0.16, ease:'power1.inOut' }, 0.54);
+
+      /* canvas sparkles fade in */
+      tl.fromTo('#bday-canvas',
+        { opacity:0 }, { opacity:1, duration:0.14, ease:'power1.out' }, 0.58);
+
+      /* enable particle rendering */
+      tl.add(() => { bdLive = true; }, 0.60);
+
+      /* cake drops in with a bounce */
+      tl.fromTo('#bd-cake',
+        { opacity:0, scale:0.35, y:24 },
+        { opacity:1, scale:1,    y:0,  duration:0.14, ease:'back.out(1.8)' }, 0.58);
+
+      /* main text scales from centre */
+      tl.fromTo('#bd-main',
+        { opacity:0, scale:0.68, y:36 },
+        { opacity:1, scale:1,    y:0,  duration:0.18, ease:'back.out(1.2)' }, 0.63);
+
+      /* "Happy Birthday" rises in */
+      tl.fromTo('#bd-happy',
+        { opacity:0, y:20 },
+        { opacity:1, y:0,  duration:0.13, ease:'power2.out' }, 0.74);
+
+      /* CSS petals drift up one by one */
+      const petalEls = document.querySelectorAll('.bd-petal');
+      petalEls.forEach((el, i) => {
+        tl.fromTo(el,
+          { opacity:0, y:18, scale:0.3 },
+          { opacity:0.75, y:0, scale:1, duration:0.10, ease:'power1.out' },
+          0.55 + i * 0.025
+        );
+      });
+
+      /* gentle pulse on main text while it holds */
+      tl.to('#bd-main', {
+        scale: 1.025, duration: 0.12, ease:'sine.inOut', yoyo:true, repeat:3,
+      }, 0.82);
+
+      /* ── 5. Wire ScrollTrigger ── */
+      ScrollTrigger.create({
+        trigger:  '#bday-outer',
+        start:    'top top',
+        end:      'bottom bottom',
+        scrub:    1.8,
+        animation: tl,
+        invalidateOnRefresh: true,
+      });
+
+      /* Accessibility — expose active phase */
+      const BSIDS = ['bds-1','bds-2','bds-3'];
+      let bPrev = null;
+      ScrollTrigger.create({
+        trigger: '#bday-outer',
+        start:   'top top',
+        end:     'bottom bottom',
+        onUpdate(self) {
+          const p = self.progress;
+          const active = p >= 0.58 ? 'bds-3'
+                       : p >= 0.33 ? 'bds-2'
+                       : p >= 0.06 ? 'bds-1'
+                       : null;
+          if (active !== bPrev) {
+            BSIDS.forEach(id => document.getElementById(id)?.setAttribute('aria-hidden','true'));
+            if (active) document.getElementById(active)?.setAttribute('aria-hidden','false');
+            bPrev = active;
+          }
+        },
+      });
+
+    })();
+
+
+    /* ─────────────────────────────────────────────────────────
+       SECTION 6 — DUA
+       ─────────────────────────────────────────────────────────
+       Atmosphere: calm, still, peaceful.
+       - Soft blush petal particles drift upward (canvas), very
+         low opacity — never competing with the text.
+       - Heading + rule appear first.
+       - Each dua line reveals independently:
+           opacity 0→1, y 24→0, blur 7px→0
+         with a comfortable stagger so each line breathes.
+       - Small rose dot under each line grows in after its line.
+       - No looping animations on text. Particles only loop.
+    ───────────────────────────────────────────────────────── */
+    (function() {
+
+      /* ── Very soft petal particles ── */
+      const duaCanvas = document.getElementById('dua-canvas');
+      const duaCtx    = duaCanvas.getContext('2d');
+      let DW = 0, DH = 0, duaLive = false;
+      const duaPool = [];
+
+      function duaResize() {
+        DW = duaCanvas.width  = duaCanvas.offsetWidth;
+        DH = duaCanvas.height = duaCanvas.offsetHeight;
+      }
+      duaResize();
+      window.addEventListener('resize', duaResize, { passive: true });
+
+      /* Very restrained palette — barely visible */
+      const DUA_PAL = [
+        'rgba(242,196,206,', 'rgba(252,232,237,',
+        'rgba(240,184,200,', 'rgba(253,220,232,',
+      ];
+
+      function duaSpawn(staggerMs) {
+        return {
+          x:    Math.random() * (DW || 400),
+          y:    (DH || 700) * (0.3 + Math.random() * 0.7),
+          r:    Math.random() * 2.8 + 0.8,
+          col:  DUA_PAL[Math.floor(Math.random() * DUA_PAL.length)],
+          ta:   Math.random() * 0.22 + 0.04,   /* intentionally very faint */
+          dx:   (Math.random() - 0.5) * 0.18,
+          dy:   -(Math.random() * 0.22 + 0.06),
+          rot:  Math.random() * Math.PI * 2,
+          drot: (Math.random() - 0.5) * 0.018,
+          born: performance.now() - (staggerMs || 0),
+          life: Math.random() * 14000 + 9000,
+        };
+      }
+
+      for (let i = 0; i < 38; i++) duaPool.push(duaSpawn(Math.random() * 8000));
+
+      (function duaTick(now) {
+        requestAnimationFrame(duaTick);
+        if (!duaLive) return;
+        duaCtx.clearRect(0, 0, DW, DH);
+        duaPool.forEach((p, i) => {
+          const t = (now - p.born) / p.life;
+          const a = t < 0.18 ? (t / 0.18) * p.ta
+                  : t > 0.78 ? ((1 - t) / 0.22) * p.ta
+                  : p.ta;
+          p.x += p.dx; p.y += p.dy; p.rot += p.drot;
+
+          /* soft ellipse petal — two layers for depth */
+          duaCtx.save();
+          duaCtx.translate(p.x, p.y);
+          duaCtx.rotate(p.rot);
+          duaCtx.beginPath();
+          duaCtx.ellipse(0, 0, p.r * 1.9, p.r * 1.1, 0, 0, Math.PI * 2);
+          duaCtx.fillStyle = p.col + (a * 0.15) + ')';
+          duaCtx.fill();
+          duaCtx.beginPath();
+          duaCtx.ellipse(0, 0, p.r, p.r * 0.6, 0, 0, Math.PI * 2);
+          duaCtx.fillStyle = p.col + a + ')';
+          duaCtx.fill();
+          duaCtx.restore();
+
+          if (t >= 1 || p.y < -20) duaPool[i] = duaSpawn(0);
+        });
+      })(performance.now());
+
+
+      /* ── ScrollTrigger entrance ── */
+      ScrollTrigger.create({
+        trigger: '#dua-section',
+        start:   'top 80%',
+        once:    true,
+        onEnter() {
+
+          const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
+
+          /* background */
+          tl.to('#dua-bg', { opacity: 1, duration: 1.4, ease: 'power1.inOut' }, 0);
+
+          /* canvas petals fade in gently */
+          tl.to('#dua-canvas', { opacity: 1, duration: 2.0, ease: 'power1.inOut' }, 0.3);
+          tl.add(() => { duaLive = true; }, 0.5);
+
+          /* heading */
+          tl.to('#dua-heading', {
+            opacity: 1, y: 0, duration: 1.0,
+          }, 0.35);
+
+          /* rule grows */
+          tl.to('#dua-rule', {
+            width: '48%', opacity: 1, duration: 0.9, ease: 'power2.inOut',
+          }, 0.80);
+
+          /* Dua lines — each reveals with opacity, y, and blur clearing */
+          const lines = document.querySelectorAll('.dua-line');
+          lines.forEach((line, i) => {
+            const start = 1.10 + i * 0.72;   /* generous spacing between lines */
+
+            /* line body */
+            tl.to(line, {
+              opacity: 1,
+              y: 0,
+              filter: 'blur(0px)',
+              duration: 1.05,
+              ease: 'power2.out',
+            }, start);
+
+            /* dot beneath */
+            tl.to(line.querySelector('.dua-line-dot'), {
+              opacity: 0.55,
+              scale: 1,
+              duration: 0.5,
+              ease: 'back.out(1.4)',
+            }, start + 0.65);
+          });
+
+        }, /* end onEnter */
+      });
+
+    })();
+
+
+    /* ─────────────────────────────────────────────────────────
+       SECTION 7 — PERSONAL MESSAGE
+       ─────────────────────────────────────────────────────────
+       Reveal order:
+         1. bg wash + heading + rule
+         2. Birthday opener (msg-opener)
+         3. sep-1 rule grows
+         4. Dua block (msg-dua)
+         5. sep-2 rule grows
+         6. Heart message (msg-heart)
+         7. Signature: glow blooms → "From Hasnain Safi" →
+            "To My Pyari Pagli Tamanna 💕" scales in
+
+       All text blocks animate: opacity + y + blur-to-clear.
+       Signature uses scale + back.out for the strongest feel.
+    ───────────────────────────────────────────────────────── */
+    (function() {
+
+      ScrollTrigger.create({
+        trigger: '#msg-section',
+        start:   'top 80%',
+        once:    true,
+        onEnter() {
+
+          const tl = gsap.timeline({
+            defaults: { ease: 'power2.out' },
+          });
+
+          /* 1 ── background */
+          tl.to('#msg-bg', {
+            opacity: 1, duration: 1.5, ease: 'power1.inOut',
+          }, 0);
+
+          /* 2 ── heading */
+          tl.to('#msg-heading', {
+            opacity: 1, y: 0, duration: 1.0,
+          }, 0.30);
+
+          tl.to('#msg-rule', {
+            width: '46%', opacity: 1, duration: 0.9, ease: 'power2.inOut',
+          }, 0.75);
+
+          /* 3 ── opener: "Happy Birthday Tamanna 🎂💕" */
+          tl.to('#msg-opener', {
+            opacity: 1, y: 0, filter: 'blur(0px)', duration: 1.05,
+          }, 1.10);
+
+          /* 4 ── sep-1 grows */
+          tl.to('#sep-1', {
+            width: '38%', opacity: 1, duration: 0.7, ease: 'power2.inOut',
+          }, 1.90);
+
+          /* 5 ── dua block */
+          tl.to('#msg-dua', {
+            opacity: 1, y: 0, filter: 'blur(0px)', duration: 1.15,
+          }, 2.30);
+
+          /* 6 ── sep-2 grows */
+          tl.to('#sep-2', {
+            width: '38%', opacity: 1, duration: 0.7, ease: 'power2.inOut',
+          }, 3.20);
+
+          /* 7 ── heart message */
+          tl.to('#msg-heart', {
+            opacity: 1, y: 0, filter: 'blur(0px)', duration: 1.20,
+          }, 3.65);
+
+          /* 8 ── signature: glow ring expands first */
+          tl.to('#msg-glow', {
+            opacity: 1, scale: 1, duration: 1.2, ease: 'power1.inOut',
+          }, 4.80);
+
+          /* 9 ── "From Hasnain Safi" rises */
+          tl.to('#msg-from', {
+            opacity: 1, y: 0, duration: 0.85,
+          }, 5.10);
+
+          /* 10 ── "To My Pyari Pagli Tamanna 💕" — the finale */
+          tl.fromTo('#msg-to',
+            { opacity: 0, scale: 0.82, y: 20, filter: 'blur(8px)' },
+            {
+              opacity: 1, scale: 1, y: 0, filter: 'blur(0px)',
+              duration: 1.20, ease: 'back.out(1.3)',
+            },
+            5.60
+          );
+
+          /* gentle breathe on the final line after it arrives */
+          tl.add(() => {
+            gsap.to('#msg-to', {
+              scale: 1.018,
+              duration: 2.2,
+              ease: 'sine.inOut',
+              repeat: -1,
+              yoyo: true,
+            });
+          }, 6.90);
+
+        },
+      });
+
+    })();
+
+
+    /* ─────────────────────────────────────────────────────────
+       SECTION 8 — INTERACTIVE GIFT BOX
+       ─────────────────────────────────────────────────────────
+       On scroll-enter: heading + gift + prompt fade in.
+       On click/tap: single-fire GSAP timeline —
+         1. shake    2. lid lifts + rotates
+         3. light blooms  4. particles burst
+         5. message reveals  6. "more" + button appear
+       Continue button: smooth-scrolls to #dua-section.
+    ───────────────────────────────────────────────────────── */
+    (function() {
+
+      /* ── Particle colour pool ── */
+      const GP_COLORS = ['#f2c4ce','#e8a0b0','#fce8ed','#f7d6de','#fddde7','#f0b8c8'];
+      const gpEls = document.querySelectorAll('.gp');
+
+      /* Assign random sizes and starting positions to each particle */
+      gpEls.forEach(p => {
+        const sz = 5 + Math.random() * 7;
+        p.style.cssText = `
+          width:${sz}px; height:${sz}px;
+          background:${GP_COLORS[Math.floor(Math.random()*GP_COLORS.length)]};
+          top:50%; left:50%;
+          margin-top:-${sz/2}px; margin-left:-${sz/2}px;
+          border-radius:${Math.random()>0.4?'50%':'30% 70% 60% 40%'};
+          opacity:0;
+        `;
+      });
+
+      /* ── Section entrance (heading + gift + prompt) ── */
+      ScrollTrigger.create({
+        trigger: '#gift-section',
+        start:   'top 82%',
+        once:    true,
+        onEnter() {
+          gsap.timeline({ defaults: { ease: 'power2.out' } })
+            .to('#gift-bg',      { opacity: 1, duration: 1.2, ease: 'power1.inOut' }, 0)
+            .to('#gift-heading', { opacity: 1, y: 0, duration: 0.9 },                 0.25)
+            .fromTo('#gift-scene',
+              { opacity: 0, y: 32, scale: 0.88 },
+              { opacity: 1, y: 0,  scale: 1,    duration: 0.85, ease: 'back.out(1.2)' }, 0.55)
+            .to('#gift-prompt',  { opacity: 1, y: 0, duration: 0.7 },                 1.10);
+        },
+      });
+
+      /* ── Click / tap / keyboard handler ── */
+      let opened = false;
+      const scene = document.getElementById('gift-scene');
+
+      function openGift() {
+        if (opened) return;
+        opened = true;
+
+        scene.setAttribute('aria-pressed', 'true');
+
+        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+        /* Step 1 — shake */
+        tl.to('#gift-scene', {
+          keyframes: [
+            { x: -5, duration: 0.06 },
+            { x:  5, duration: 0.06 },
+            { x: -4, duration: 0.05 },
+            { x:  4, duration: 0.05 },
+            { x: -2, duration: 0.04 },
+            { x:  0, duration: 0.04 },
+          ],
+          ease: 'none',
+        }, 0);
+
+        /* Step 2 — lid lifts: rotateX up and translateY up */
+        tl.to('#gift-lid', {
+          rotateX:       -110,
+          y:             -clamp(48, 10, 72),
+          transformOrigin: 'center bottom',
+          duration:      0.65,
+          ease:          'back.out(1.4)',
+        }, 0.32);
+
+        /* bow rides with lid — just fades slightly */
+        tl.to('#gift-bow', { opacity: 0.6, duration: 0.4 }, 0.32);
+
+        /* Step 3 — light blooms inside box */
+        tl.to('#gift-light', {
+          opacity: 1, duration: 0.55, ease: 'power1.inOut',
+        }, 0.55);
+
+        /* Step 4 — particles burst outward */
+        const angles = [0, 45, 90, 135, 180, 225, 270, 315];
+        gpEls.forEach((p, i) => {
+          const ang = (angles[i] ?? i * 45) * Math.PI / 180;
+          const dist = 55 + Math.random() * 55;
+          tl.fromTo(p,
+            { x: 0, y: 0, opacity: 0, scale: 0.3 },
+            {
+              x:       Math.cos(ang) * dist,
+              y:       Math.sin(ang) * dist - 20,
+              opacity: 0.9,
+              scale:   1,
+              duration: 0.55,
+              ease:    'power2.out',
+            },
+            0.55 + i * 0.03
+          );
+          /* fade out after burst */
+          tl.to(p, { opacity: 0, y: `+=${20 + Math.random()*20}`, duration: 0.5, ease: 'power1.in' },
+            1.00 + i * 0.04);
+        });
+
+        /* Step 5 — hide prompt, reveal message */
+        tl.to('#gift-prompt', { opacity: 0, y: -10, duration: 0.3 }, 0.50);
+        tl.to('#gift-message', {
+          opacity: 1, y: 0, filter: 'blur(0px)', duration: 1.0,
+        }, 0.90);
+
+        /* Step 6 — "still something more" + button */
+        tl.to('#gift-more', {
+          opacity: 1, duration: 0.7,
+        }, 1.70);
+        tl.to('#gift-btn', {
+          opacity: 1, y: 0, duration: 0.6, ease: 'back.out(1.3)',
+        }, 1.95);
+      }
+
+      /* Helper: clamp for the lid lift distance */
+      function clamp(ideal, min, max) {
+        const vwVal = window.innerWidth * ideal / 100;
+        return Math.min(max, Math.max(min, vwVal));
+      }
+
+      scene.addEventListener('click',   openGift, { passive: true });
+      scene.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openGift(); } });
+
+      /* ── Continue button — smooth scroll ── */
+      document.getElementById('gift-btn').addEventListener('click', () => {
+        /* scroll to the section after the gift — dua-section is just below */
+        const target = document.getElementById('dua-section');
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+
+    })();
+
+
+    /* ─────────────────────────────────────────────────────────
+       SECTION 9 — FINAL SURPRISE
+       ─────────────────────────────────────────────────────────
+       Reveal sequence (once, on scroll-enter):
+         0.0s  bg-1 blooms
+         0.3s  "Wait… There's One Last Thing." rises
+         1.1s  bg-2 brightens
+         1.3s  "Happy Birthday, Tamanna" — opacity+y+blur
+         2.4s  blessing — opacity+y+blur
+         3.3s  rule grows
+         3.7s  "From Hasnain Safi" rises
+         4.2s  glow ring expands
+         4.5s  "To My Pyari Pagli Tamanna 💕" —
+               scale 0.80→1, y, blur-to-clear, back.out
+         5.8s  gentle infinite breathe on final line
+         4.0s  canvas petals enable
+    ───────────────────────────────────────────────────────── */
+    (function() {
+
+      /* ── Very soft petal particle system for the final section ── */
+      const fCanvas = document.getElementById('final-canvas');
+      const fCtx    = fCanvas.getContext('2d');
+      let FW = 0, FH = 0, fLive = false;
+      const fPool = [];
+
+      function fResize() {
+        FW = fCanvas.width  = fCanvas.offsetWidth;
+        FH = fCanvas.height = fCanvas.offsetHeight;
+      }
+      fResize();
+      window.addEventListener('resize', fResize, { passive: true });
+
+      const F_PAL = [
+        'rgba(242,196,206,', 'rgba(252,232,237,',
+        'rgba(232,160,176,', 'rgba(253,220,232,',
+      ];
+
+      function fSpawn(staggerMs) {
+        return {
+          x:    Math.random() * (FW || 400),
+          y:    (FH || 700) * (0.2 + Math.random() * 0.8),
+          r:    Math.random() * 3 + 0.9,
+          col:  F_PAL[Math.floor(Math.random() * F_PAL.length)],
+          ta:   Math.random() * 0.26 + 0.05,   /* whisper-quiet */
+          dx:   (Math.random() - 0.5) * 0.20,
+          dy:   -(Math.random() * 0.24 + 0.07),
+          rot:  Math.random() * Math.PI * 2,
+          drot: (Math.random() - 0.5) * 0.016,
+          born: performance.now() - (staggerMs || 0),
+          life: Math.random() * 13000 + 8000,
+        };
+      }
+
+      for (let i = 0; i < 42; i++) fPool.push(fSpawn(Math.random() * 7000));
+
+      (function fTick(now) {
+        requestAnimationFrame(fTick);
+        if (!fLive) return;
+        fCtx.clearRect(0, 0, FW, FH);
+        fPool.forEach((p, i) => {
+          const t = (now - p.born) / p.life;
+          const a = t < 0.16 ? (t / 0.16) * p.ta
+                  : t > 0.78 ? ((1 - t) / 0.22) * p.ta
+                  : p.ta;
+          p.x += p.dx; p.y += p.dy; p.rot += p.drot;
+          fCtx.save();
+          fCtx.translate(p.x, p.y);
+          fCtx.rotate(p.rot);
+          fCtx.beginPath();
+          fCtx.ellipse(0, 0, p.r * 2.0, p.r * 1.15, 0, 0, Math.PI * 2);
+          fCtx.fillStyle = p.col + (a * 0.16) + ')';
+          fCtx.fill();
+          fCtx.beginPath();
+          fCtx.ellipse(0, 0, p.r, p.r * 0.60, 0, 0, Math.PI * 2);
+          fCtx.fillStyle = p.col + a + ')';
+          fCtx.fill();
+          fCtx.restore();
+          if (t >= 1 || p.y < -20) fPool[i] = fSpawn(0);
+        });
+      })(performance.now());
+
+      /* ── ScrollTrigger reveal ── */
+      ScrollTrigger.create({
+        trigger: '#final-section',
+        start:   'top 78%',
+        once:    true,
+        onEnter() {
+
+          const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
+
+          /* 0 — bg-1 warm bloom */
+          tl.to('#final-bg-1', {
+            opacity: 1, duration: 1.4, ease: 'power1.inOut',
+          }, 0);
+
+          /* 1 — "Wait… There's One Last Thing." */
+          tl.to('#final-wait', {
+            opacity: 1, y: 0, duration: 0.90,
+          }, 0.30);
+
+          /* 2 — bg-2 brighter wash */
+          tl.to('#final-bg-2', {
+            opacity: 1, duration: 1.1, ease: 'power1.inOut',
+          }, 1.10);
+
+          /* 3 — "Happy Birthday, Tamanna" */
+          tl.to('#final-bday', {
+            opacity: 1, y: 0, filter: 'blur(0px)', duration: 1.05,
+          }, 1.30);
+
+          /* 4 — blessing paragraph */
+          tl.to('#final-blessing', {
+            opacity: 1, y: 0, filter: 'blur(0px)', duration: 1.10,
+          }, 2.40);
+
+          /* 5 — rule grows */
+          tl.to('#final-rule', {
+            width: '44%', opacity: 1, duration: 0.80, ease: 'power2.inOut',
+          }, 3.30);
+
+          /* 6 — "From Hasnain Safi" */
+          tl.to('#final-from', {
+            opacity: 1, y: 0, duration: 0.80,
+          }, 3.70);
+
+          /* 7 — canvas petals begin */
+          tl.to('#final-canvas', {
+            opacity: 1, duration: 1.4, ease: 'power1.inOut',
+          }, 4.00);
+          tl.add(() => { fLive = true; }, 4.10);
+
+          /* 8 — glow ring expands softly behind final line */
+          tl.to('#final-glow', {
+            opacity: 1, scale: 1,
+            transformOrigin: 'center center',
+            duration: 1.3, ease: 'power1.inOut',
+          }, 4.20);
+
+          /* 9 — THE FINALE: scale, y, blur all clear together */
+          tl.to('#final-to', {
+            opacity: 1,
+            scale: 1,
+            y: 0,
+            filter: 'blur(0px)',
+            duration: 1.30,
+            ease: 'back.out(1.25)',
+          }, 4.50);
+
+          /* 10 — very gentle infinite breathe, stays alive */
+          tl.add(() => {
+            gsap.to('#final-to', {
+              scale:    1.016,
+              duration: 2.6,
+              ease:     'sine.inOut',
+              repeat:   -1,
+              yoyo:     true,
+            });
+          }, 5.90);
+
+        },
+      });
+
+    })();
+
+
+    /* ─────────────────────────────────────────────────────────
+       SECTION 10 — CELEBRATION ENDING
+       ─────────────────────────────────────────────────────────
+       Canvas draws three particle types — each lightweight:
+         'petal'   — soft rotated ellipse, blush palette
+         'sparkle' — 4-point cross stroke, rose palette
+         'heart'   — two overlapping circles + triangle, very
+                     small, low opacity so it's elegant not loud
+
+       Reveal timeline (once, top 76%):
+         0.0  bg wash
+         0.3  title glow expands
+         0.5  title: scale+y+blur clears, back.out(1.2)
+         1.6  canvas fades in, particles enable
+         1.8  heart pops in, back.out(2)
+         2.2  tagline rises, blur clears
+         3.0  replay button rises
+
+       Replay button: window.scrollTo({top:0,behavior:'smooth'})
+    ───────────────────────────────────────────────────────── */
+    (function() {
+
+      /* ── Canvas setup ── */
+      const celCanvas = document.getElementById('cel-canvas');
+      const celCtx    = celCanvas.getContext('2d');
+      let CW = 0, CH = 0, celLive = false;
+      const celPool = [];
+
+      function celResize() {
+        CW = celCanvas.width  = celCanvas.offsetWidth;
+        CH = celCanvas.height = celCanvas.offsetHeight;
+      }
+      celResize();
+      window.addEventListener('resize', celResize, { passive: true });
+
+      /* palettes */
+      const PETAL_PAL   = ['rgba(242,196,206,','rgba(252,232,237,','rgba(232,160,176,','rgba(253,220,232,'];
+      const SPARKLE_PAL = ['rgba(232,160,176,','rgba(242,196,206,','rgba(220,140,165,'];
+      const HEART_PAL   = ['rgba(232,160,176,','rgba(242,196,206,','rgba(248,180,200,'];
+
+      function celSpawn(staggerMs) {
+        const roll = Math.random();
+        const type = roll < 0.50 ? 'petal' : roll < 0.80 ? 'sparkle' : 'heart';
+        const pal  = type === 'petal' ? PETAL_PAL : type === 'sparkle' ? SPARKLE_PAL : HEART_PAL;
+        return {
+          type,
+          x:    Math.random() * (CW || 400),
+          y:    (CH || 700) + Math.random() * 40,
+          r:    type === 'heart' ? Math.random() * 5 + 3
+              : type === 'sparkle' ? Math.random() * 3 + 2
+              : Math.random() * 4 + 1.5,
+          col:  pal[Math.floor(Math.random() * pal.length)],
+          ta:   type === 'heart' ? Math.random() * 0.30 + 0.08
+              : type === 'sparkle' ? Math.random() * 0.38 + 0.10
+              : Math.random() * 0.24 + 0.06,
+          dx:   (Math.random() - 0.5) * 0.45,
+          dy:   -(Math.random() * 0.55 + 0.18),
+          rot:  Math.random() * Math.PI * 2,
+          drot: (Math.random() - 0.5) * 0.022,
+          born: performance.now() - (staggerMs || 0),
+          life: Math.random() * 10000 + 6000,
+          sw:   1 + Math.random(),      /* sparkle arm length multiplier */
+        };
+      }
+
+      /* pre-seed spread across canvas so it looks alive on first enter */
+      for (let i = 0; i < 55; i++) {
+        const p = celSpawn(Math.random() * 6000);
+        p.y = Math.random() * (CH || 700);
+        celPool.push(p);
+      }
+
+      /* draw a tiny CSS-style heart using canvas path */
+      function drawHeart(ctx, x, y, r, a, col) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.globalAlpha = a;
+        ctx.fillStyle = col + '1)';
+        ctx.beginPath();
+        /* heart via cubic bezier — simple and cheap */
+        ctx.moveTo(0, r * 0.3);
+        ctx.bezierCurveTo( r,   -r * 0.4,  r * 1.8,  r * 0.6,  0,   r * 1.5);
+        ctx.bezierCurveTo(-r * 1.8,  r * 0.6, -r,  -r * 0.4,  0,   r * 0.3);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.restore();
+      }
+
+      /* draw a 4-point sparkle cross */
+      function drawSparkle(ctx, x, y, r, rot, a, col) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(rot);
+        ctx.strokeStyle = col + a + ')';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        /* long axis */
+        ctx.moveTo(0, -r * 2.2); ctx.lineTo(0,  r * 2.2);
+        /* short axis */
+        ctx.moveTo(-r * 1.2, 0); ctx.lineTo( r * 1.2, 0);
+        /* tiny diagonal accents */
+        ctx.moveTo(-r * 0.7, -r * 0.7); ctx.lineTo( r * 0.7,  r * 0.7);
+        ctx.moveTo( r * 0.7, -r * 0.7); ctx.lineTo(-r * 0.7,  r * 0.7);
+        ctx.stroke();
+        /* centre dot */
+        ctx.beginPath();
+        ctx.arc(0, 0, r * 0.28, 0, Math.PI * 2);
+        ctx.fillStyle = col + (a * 0.9) + ')';
+        ctx.fill();
+        ctx.restore();
+      }
+
+      (function celTick(now) {
+        requestAnimationFrame(celTick);
+        if (!celLive) return;
+        celCtx.clearRect(0, 0, CW, CH);
+
+        celPool.forEach((p, i) => {
+          const t = (now - p.born) / p.life;
+          const a = t < 0.14 ? (t / 0.14) * p.ta
+                  : t > 0.76 ? ((1 - t) / 0.24) * p.ta
+                  : p.ta;
+          p.x += p.dx; p.y += p.dy; p.rot += p.drot;
+
+          if (p.type === 'petal') {
+            celCtx.save();
+            celCtx.translate(p.x, p.y);
+            celCtx.rotate(p.rot);
+            celCtx.beginPath();
+            celCtx.ellipse(0, 0, p.r * 2.1, p.r * 1.2, 0, 0, Math.PI * 2);
+            celCtx.fillStyle = p.col + (a * 0.18) + ')';
+            celCtx.fill();
+            celCtx.beginPath();
+            celCtx.ellipse(0, 0, p.r, p.r * 0.62, 0, 0, Math.PI * 2);
+            celCtx.fillStyle = p.col + a + ')';
+            celCtx.fill();
+            celCtx.restore();
+          } else if (p.type === 'sparkle') {
+            drawSparkle(celCtx, p.x, p.y, p.r, p.rot, a, p.col);
+          } else {
+            drawHeart(celCtx, p.x, p.y, p.r, a, p.col);
+          }
+
+          if (t >= 1 || p.y < -30) celPool[i] = celSpawn(0);
+        });
+      })(performance.now());
+
+
+      /* ── ScrollTrigger entrance ── */
+      ScrollTrigger.create({
+        trigger: '#celebration-section',
+        start:   'top 76%',
+        once:    true,
+        onEnter() {
+
+          const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
+
+          /* 0 — background warms */
+          tl.to('#cel-bg', {
+            opacity: 1, duration: 1.6, ease: 'power1.inOut',
+          }, 0);
+
+          /* 1 — glow ring behind title */
+          tl.to('#cel-title-glow', {
+            opacity: 1, scale: 1,
+            transformOrigin: 'center center',
+            duration: 1.2, ease: 'power1.inOut',
+          }, 0.30);
+
+          /* 2 — title: scale + y + blur — the centrepiece */
+          tl.to('#cel-title', {
+            opacity: 1, scale: 1, y: 0, filter: 'blur(0px)',
+            duration: 1.20, ease: 'back.out(1.2)',
+          }, 0.50);
+
+          /* 3 — canvas and particles */
+          tl.to('#cel-canvas', {
+            opacity: 1, duration: 1.4, ease: 'power1.inOut',
+          }, 1.60);
+          tl.add(() => { celLive = true; }, 1.70);
+
+          /* 4 — heart pops in */
+          tl.to('#cel-heart', {
+            opacity: 1, scale: 1,
+            duration: 0.60, ease: 'back.out(2)',
+          }, 1.80);
+
+          /* 5 — tagline */
+          tl.to('#cel-tagline', {
+            opacity: 1, y: 0, filter: 'blur(0px)',
+            duration: 0.90,
+          }, 2.20);
+
+          /* 6 — replay button */
+          tl.to('#cel-replay', {
+            opacity: 1, y: 0, duration: 0.70, ease: 'back.out(1.3)',
+          }, 3.00);
+
+          /* 7 — gentle breathe on title, runs forever */
+          tl.add(() => {
+            gsap.to('#cel-title', {
+              scale: 1.014, duration: 3.0,
+              ease: 'sine.inOut', repeat: -1, yoyo: true,
+            });
+            /* heart pulses slightly faster */
+            gsap.to('#cel-heart', {
+              scale: 1.12, duration: 1.4,
+              ease: 'sine.inOut', repeat: -1, yoyo: true,
+            });
+          }, 3.60);
+
+        },
+      });
+
+
+      /* ── Replay button — scroll to top ── */
+      document.getElementById('cel-replay').addEventListener('click', function() {
+        /* GSAP ScrollToPlugin is not loaded, use native smooth scroll */
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, { passive: true });
+
+    })();
+
+  </script>
+</body>
+</html>
